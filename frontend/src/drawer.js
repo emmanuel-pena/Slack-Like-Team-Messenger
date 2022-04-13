@@ -30,7 +30,7 @@ import {Typography} from '@mui/material';
 import {Divider} from '@mui/material';
 
 // global context
-import {GlobalProvider} from './globalContext';
+import globalContext from './globalContext';
 
 const drawerWidth = 240;
 // soruce: https://material-ui.com/components/drawers/
@@ -184,12 +184,6 @@ const useStyles = makeStyles((theme) => ({
     },
     fontSize: 'medium',
   },
-  // This is what I was playing with to figure out the
-  // MEDIUM screen size button popping up.
-  // The med size button can be gotten from:
-  // import MenuIcon from '@material-ui/icons/Menu';
-  // Should probably be placed next to the "workspace
-  // name will go here" div/span
   menuButtonMed: {
     display: 'none',
     [theme.breakpoints.between('lg', 'xl')]: {
@@ -246,6 +240,7 @@ const useStyles = makeStyles((theme) => ({
 // source: https://material-ui.com/components/drawers/
 
 const userObj = JSON.parse(localStorage.getItem('user'));
+console.log(userObj);
 const today = new Date();
 
 const months = {
@@ -272,19 +267,21 @@ export default function ResponsiveDrawer(props) {
   const {window} = props;
   const classes = useStyles();
   const theme = useTheme();
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const {mobileOpen, setMobileOpen} = React.useContext(globalContext);
   const [selectedListItem, setSelectedItem] = React.useState(false);
-  const initialWorkspaces = userObj.workspaces;
 
   // GLOBAL CONTEXT
-  const [currentWorkspace, setWorkspace] = React.useState(initialWorkspaces[0]);
-  const [currentChannels, setChannels] = React.useState([]);
-  const [currentDmdWith, setDmdWith] = React.useState([]);
-  const [clickedDms, setClickedDms] = React.useState('false');
-  const [clickedUserId, setClickedUserId] = React.useState('');
-  const [settingsOpen, setSettingsOpen] = React.useState(false);
-  const [userStatus, setUserStatus] = React.useState('Active');
-  const [userName] = React.useState('PLACEHOLDER_USER');
+  const {userObj} = React.useContext(globalContext);
+  const {currentWorkspace, setWorkspace} = React.useContext(globalContext);
+  const {currentChannels, setChannels} = React.useContext(globalContext);
+  const {currentDmdWith, setDmdWith} = React.useContext(globalContext);
+  const {clickedDms, setClickedDms} = React.useContext(globalContext);
+  const {clickedUserId, setClickedUserId} = React.useContext(globalContext);
+  const {settingsOpen, setSettingsOpen} = React.useContext(globalContext);
+  const {userStatus, setUserStatus} = React.useContext(globalContext);
+  const {userName} = React.useContext(globalContext);
+  const {currentChatlog, setChatlog} = React.useContext(globalContext);
+  const {currentChannel, setChannel} = React.useContext(globalContext);
 
   console.log('I am inside drawer!!');
 
@@ -370,12 +367,8 @@ export default function ResponsiveDrawer(props) {
     getDmdWith();
   }, [currentWorkspace]);
 
-  const [currentChannel, setChannel] =
-    React.useState('# General');
 
   // setting the chatlogs stuff:  ------------------------------------------
-  const [currentChatlog, setChatlog] =
-    React.useState([]);
 
   const getChatlog = () => {
     try {
@@ -463,10 +456,6 @@ export default function ResponsiveDrawer(props) {
   };
 
   const drawer = (
-    <GlobalProvider value={{
-      setMobileOpen, currentChannels, currentDmdWith,
-      setChannel, clickedDms, setClickedDms,
-      clickedUserId, setClickedUserId}}>
       <div>
         <div className={classes.toolbar}/>
         <List className={classes.DMSnMentionsText}>
@@ -489,18 +478,12 @@ export default function ResponsiveDrawer(props) {
         <ChannelsList />
         <DmsList />
       </div>
-    </GlobalProvider>
   );
 
   const container = window !==
     undefined ? () => window().document.body : undefined;
 
   return (
-    <GlobalProvider value={{
-      currentWorkspace, setWorkspace, setMobileOpen, settingsOpen,
-      setSettingsOpen, userStatus, setUserStatus, userName,
-      currentChannel, setChannel, clickedDms, setClickedDms,
-      clickedUserId, setClickedUserId, setChatlog, currentChannels}}>
       <div className={classes.back}>
         <CssBaseline />
         <AppBar position="Absolute" className={classes.appBar}>
@@ -624,7 +607,6 @@ export default function ResponsiveDrawer(props) {
           <Chatbox className={classes.inner2} />
         </div>
       </div>
-    </GlobalProvider>
   );
 }
 // source: https://material-ui.com/components/drawers/

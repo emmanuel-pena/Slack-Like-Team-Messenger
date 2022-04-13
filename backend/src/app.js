@@ -28,10 +28,12 @@ app.use(
   }),
 );
 
-app.post('/v0/authenticate', auth.authenticate);
+app.post('/v0/login', auth.authenticate);
 
 app.get('/v0/dummy', dummy.get);
 // Your routes go here
+app.post('/v0/user', user.createUser);
+
 app.get('/v0/ua', user.getUA);
 app.get('/v0/channelschat', user.getChannelChat);
 app.post('/v0/channelschat', user.pushToChannel);

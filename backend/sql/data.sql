@@ -3,12 +3,10 @@ INSERT INTO dummy (created) VALUES (current_timestamp);
 
 -- Populate Your Tables Here --
 DELETE FROM Users;
-INSERT INTO Users VALUES ('1', 'jc@ucsc.edu', 'Jack', 'Cooper', 'admin', NULL, '{"id":"1", "name":"Jack Cooper","password":"$2a$10$8y4LYm7f0qMnouiNMlg6puBNiy1siZi3bUEu5FKorTo8IPVxmOJYG", "email":"jc@ucsc.edu", "role":"admin", "workspaces":["CSE 183 Summer 2021", "CSE 130"]}');
-INSERT INTO Users VALUES ('2', 'ep@ucsc.edu', 'Emmanuel', 'Pena', 'admin', NULL, '{"id":"2", "name":"Emmanuel Pena", "password":"$2a$10$5TLsDwQXboHiXzTLSeZ01.5pjT76T3SQhyhulsSDST9fnoP.BT5x2", "email":"ep@ucsc.edu", "role": "admin", "workspaces":["CSE 183 Summer 2021", "CSE 130"]}');
-INSERT INTO Users VALUES ('3', 'slug@ucsc.edu', 'Sammy', 'Slug', 'member', NULL, '{"id":"3", "name":"Sammy Slug","password":"$2a$10$FwbnonhdgakcpqlWpowVKudAy9Gdtu3LT45TDCux.WS5THA5Bxisi","email":"slug@ucsc.edu","role":"member", "workspaces":["CSE 183 Summer 2021", "Investors"]}');
-INSERT INTO Users VALUES ('4', 'turing@ucsc.edu', 'Alan', 'Turing', 'member', NULL, '{"id":"4", "name":"Alan Turing", "password":"$2a$10$mLMIMS9KAKfQKWJsgc3rbuwoiY.kWNKEGxv054OHhlVEPTzCQ8sfq", "email":"turing@ucsc.edu", "role":"member", "workspaces":["CSE 183 Summer 2021", "Investors"]}');
-INSERT INTO Users VALUES ('5', 'turin@ucsc.edu', 'Alan', 'Turin', 'member', NULL, '{"id":"5", "name":"Alan Turin", "password":"$2a$10$mLMIMS9KAKfQKWJsgc3rbuwoiY.kWNKEGxv054OHhlVEPTzCQ8sfq", "email":"turin@ucsc.edu", "role":"member", "workspaces":["CSE 130", "Investors"]}');
-INSERT INTO Users VALUES ('6', 'turi@ucsc.edu', 'Alan', 'Turi', 'member', NULL, '{"id":"6", "name":"Alan Turi", "password":"$2a$10$mLMIMS9KAKfQKWJsgc3rbuwoiY.kWNKjGxv054OHhlVEPTzCQ8sfq", "email":"turi@ucsc.edu", "role":"member", "workspaces":["CSE 130", "Investors"]}');
+INSERT INTO Users VALUES ('1', 'jc@ucsc.edu', 'Jack', 'Cooper', 'admin', NULL, 'Jack Cooper', '$2a$10$8y4LYm7f0qMnouiNMlg6puBNiy1siZi3bUEu5FKorTo8IPVxmOJYG', '["CSE 183 Summer 2021", "CSE 130"]', 'user1');
+INSERT INTO Users VALUES ('2', 'ep@ucsc.edu', 'Emmanuel', 'Pena', 'admin', NULL, 'Emmanuel Pena', '$2a$10$5TLsDwQXboHiXzTLSeZ01.5pjT76T3SQhyhulsSDST9fnoP.BT5x2', '["CSE 183 Summer 2021", "CSE 130"]', 'user2');
+INSERT INTO Users VALUES ('3', 'slug@ucsc.edu', 'Sammy', 'Slug', 'member', NULL, 'Sammy Slug', '$2a$10$FwbnonhdgakcpqlWpowVKudAy9Gdtu3LT45TDCux.WS5THA5Bxisi', '["CSE 183 Summer 2021", "Investors"]', 'user3');
+INSERT INTO Users VALUES ('4', 'turing@ucsc.edu', 'Alan', 'Turing', 'member', NULL, 'Alan Turing', '$2a$10$mLMIMS9KAKfQKWJsgc3rbuwoiY.kWNKEGxv054OHhlVEPTzCQ8sfq', '["CSE 183 Summer 2021", "Investors"]', 'user4');
 
 -- Workspaces TABLE --
 DELETE FROM Workspaces;

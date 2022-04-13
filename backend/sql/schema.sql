@@ -6,14 +6,18 @@ CREATE TABLE dummy(created TIMESTAMP WITH TIME ZONE);
 -- USERS TABLE --
 DROP TABLE IF EXISTS Users;
 CREATE TABLE Users(
-   ident VARCHAR(32) PRIMARY KEY,
+   id   VARCHAR(32) PRIMARY KEY,
    email VARCHAR(32) NOT NULL,
    firstName VARCHAR(32),
    lastName VARCHAR(32),
-   accRole VARCHAR(32),
-   active BOOLEAN,
-   ua jsonb,
-   UNIQUE (email)
+   accRole VARCHAR(32) DEFAULT 'member',
+   active BOOLEAN DEFAULT false,
+   fullName  VARCHAR(32),
+   password_hash TEXT,
+   workspaces   jsonb,
+   username VARCHAR(32) NOT NULL,
+   UNIQUE (email),
+   UNIQUE (username)
 );
 
 -- WORKSPACES TABLE --
@@ -39,8 +43,8 @@ CREATE TABLE Dms(
     workspacename VARCHAR(32),
     chatlog jsonb,
     PRIMARY KEY (userID, withID, workspacename),
-    FOREIGN KEY (userID) REFERENCES Users(ident),
-    FOREIGN KEY (withID) REFERENCES Users(ident),
+    FOREIGN KEY (userID) REFERENCES Users(id),
+    FOREIGN KEY (withID) REFERENCES Users(id),
     FOREIGN KEY (workspacename) REFERENCES Workspaces(workspacename)
 );
 

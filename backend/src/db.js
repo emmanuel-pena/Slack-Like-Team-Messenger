@@ -20,9 +20,79 @@ setUserToActive = async (email) => {
   await pool.query(query);
 };
 
+exports.userExists = async (userInfo) => {
+  let select = 'SELECT * FROM Users';
+  const queryValues = [];
+
+  if (userInfo.username && userInfo.email) {
+    select += ' WHERE email = $1 OR username = $2';
+    queryValues.push(userInfo.email, userInfo.username);
+  } else if (userInfo.email) {
+    select += ' WHERE email = $1 ';
+    queryValues.push(userInfo.email);
+  } else {
+    select += ' WHERE username = $1 ';
+    queryValues.push(userInfo.username);
+  }
+
+  const query = {
+    text: select,
+    values: queryValues,
+  };
+
+  const {rows} = await pool.query(query);
+  return rows.length == 0 ? false : rows;
+};
+
+checkNumUsers = async () => {
+  const select = 'SELECT email FROM Users';
+  const query = {
+    text: select,
+    values: [],
+  };
+
+  const {rows} = await pool.query(query);
+  return rows.length;
+};
+
+exports.addUser = async (newUser) => {
+  const fullName = newUser.first + ' ' + newUser.last;
+  const emptyArray = [];
+  const initWS = JSON.stringify(emptyArray);;
+
+  const numUsers = await checkNumUsers();
+  const ident = String(numUsers + 1);
+
+  const insert =
+    'INSERT INTO Users(id, username, email, firstName, lastName, fullName, password_hash, workspaces)' +
+    'VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id, username, email';
+
+  const query = {
+    text: insert,
+    values: [
+      ident,
+      newUser.username,
+      newUser.email,
+      newUser.first,
+      newUser.last,
+      fullName,
+      newUser.password,
+      initWS,
+    ],
+  };
+
+  const { rows } = await pool.query(query);
+  console.log('db.js line 85)');
+  console.log(rows);
+  const obj = {id: rows[0].id, username: rows[0].username, email: rows[0].email};
+  console.log('db.js line 87)');
+  console.log(obj);
+  return obj;
+};
+
 exports.getUA = async (email) => {
 
-  const select = 'SELECT ua FROM Users WHERE email = $1';
+  const select = 'SELECT * FROM Users WHERE email = $1';
 
   await setUserToActive(email);
 
@@ -32,10 +102,18 @@ exports.getUA = async (email) => {
   };
   const { rows } = await pool.query(query);
   console.log(rows);
+  const ua = {id: '', name: '', password: '', email: '', role: '', workspaces: []};
+
 
   if (rows.length > 0) {
     console.log(rows.length);
-    return rows[0].ua;
+    ua.id = rows[0].id;
+    ua["name"] = rows[0].fullName;
+    ua.password = rows[0].password_hash;
+    ua["email"] = rows[0].email;
+    ua.role = rows[0].accRole;
+    ua.workspaces = rows[0].workspaces;
+    return ua;
   }
   else {
     return null;
@@ -98,7 +176,7 @@ exports.getDmsWithUser = async (id, idWith, ws) => {
 
 
 getFullName = async (ident) => {  // A helper func for posting. Retrieves the full name of the current user's id to use in 'from' part
-  const select = 'SELECT firstName, lastName FROM Users WHERE ident LIKE $1';
+  const select = 'SELECT firstName, lastName FROM Users WHERE id LIKE $1';
   const query = {
     text: select,
     values: [ident],
@@ -225,7 +303,7 @@ exports.getDmdUsers = async (id, ws) => {
 };
 
 exports.getWorkspaces = async (id) => {
-  const select = 'SELECT ua->\'workspaces\' AS theColumn FROM Users WHERE ident LIKE $1';
+  const select = 'SELECT workspaces AS theColumn FROM Users WHERE id = $1';
   const query = {
     text: select,
     values: [id],
@@ -235,8 +313,9 @@ exports.getWorkspaces = async (id) => {
 
 
   if (rows.length > 0) {
-
-    return rows[0]["thecolumn"];;
+    console.log('db.js line 313)');
+    console.log(rows[0]["thecolumn"]);
+    return rows[0]["thecolumn"];
   }
   else {
     return null;

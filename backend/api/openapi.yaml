@@ -13,7 +13,7 @@ servers:
   - url: http://localhost:3010/v0
 
 paths:
-  /authenticate:
+  /login:
     post:
       description: Checks User
       requestBody:
@@ -30,12 +30,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Authenticated'
-        403:
+        400:
+          description: 400 means bad request
+        401:
           description: Username or password incorrect
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /user:
+    post:
+      description: Creates a new user
+      requestBody:
+        description: User to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUser'
+      responses:
+        200:
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Createduser'
+        400:
+          description: Submitted User has unexpected properties
+        409:
+          description: Conflict. User with email or user-name already exists
         default:
           description: unexpected error
           content:
@@ -347,6 +377,43 @@ components:
         message:
           type: string
 
+    NewUser:
+      type: object
+      additionalProperties: false
+      properties:
+        first:
+          type: string
+        last:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+          pattern: '(\w+|\d+)[^\s]+@(\w+|\d+)[^\s]*\.((\w+|\d+)[^\s]*){2,6}'
+        password:
+          type: string
+          minLength: 5
+      required:
+        - username
+        - email
+        - password
+
+    Createduser:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+      required:
+        - id
+        - username
+        - email
+
     DummyResponse:
       required:
         - message
@@ -357,13 +424,17 @@ components:
     Authenticated:
       type: object
       properties:
-        name:
+        id:
           type: string
-        accessToken:
+        name:
           type: string
         email:
           type: string
           format: email
+        username:
+          type: string
+        accessToken:
+          type: string
         role:
           type: string
         workspaces:
@@ -440,14 +511,15 @@ components:
     UserReq:
       type: object
       properties:
+        password:
+          type: string
+        username:
+          type: string
         email:
           type: string
           format: email
-        password:
-          type: string
       required:
         - password
-        - email
 
     UserReqChannels:
       type: object

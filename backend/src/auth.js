@@ -1,3 +1,4 @@
+const db = require('./db');
 const { Pool } = require('pg');
 
 const pool = new Pool({
@@ -24,34 +25,45 @@ var bcrypt = require('bcrypt');
 // select users from USERS table from database
 // var users = require('../data/users.json');
 
-
 exports.authenticate = async (req, res) => {
-  const userReq = req.body;
-  // search database for user with supplied request info
+  const info = req.body;
   const secrets = await getSecrets();
-  const user = await getUser(userReq.email);
 
-  if (!user) {
-    res.status(401).send('Username or password incorrect');
+  if ((!info.email && !info.username) || (!info.password)) {
+    res.status(400).send();
+    return;
   }
-
-  const passwordCheck = bcrypt.compareSync(userReq.password, user.ua.password);
-  if (user.ua.email.toUpperCase() === userReq.email.toUpperCase()  
-    && passwordCheck)
-  {
-    const accessToken = jwt.sign(
-      {email: user.email},
-      secrets, {
-      expiresIn: '25m',
-      algorithm: 'HS256'
-    });
-    console.log(user.ua);
-    console.log(user.ua["email"]);
-    const info = {"id": user.ua['id'], "name": user.ua['name'], "accessToken": accessToken, "email": user.ua['email'], "role": user.ua['role'], "workspaces": user.ua['workspaces'] };
-    console.log(info);
-    res.status(200).send(info);
+  const user = await db.userExists(info);
+  if (user) {
+    const passwordCorrect = bcrypt.compareSync(
+      info.password, user[0].password_hash);
+    if (!passwordCorrect) {
+      res.status(401).send();
+      return;
+    } else {
+      const accessToken = jwt.sign({
+        email: user[0].email,
+        id: user[0].id,
+        username: user[0].username,
+      },
+        secrets, {
+        expiresIn: '2h',
+        algorithm: 'HS256',
+      });
+      const response = {
+        'id': user[0].id,
+        'name': user[0].fullName,
+        'email': user[0].email,
+        'username': user[0].username,
+        'accessToken': accessToken,
+        'role': user[0].accRole,
+        'workspaces': user[0].workspaces,
+      };
+      console.log(`${info.username} has succesfully logged-in!`);
+      res.status(200).send(response);
+    }
   } else {
-    res.status(401).send('Username or password incorrect');
+    res.status(401).send();
   }
 };
 

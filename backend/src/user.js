@@ -1,4 +1,20 @@
+const bcrypt = require('bcrypt');
 const db = require('./db');
+const saltRounds = 11;
+
+exports.createUser = async (req, res) => {
+  const info = req.body;
+
+  if (await db.userExists(info)) {
+    res.status(409).send();
+  } else {
+    const passwordHash = await bcrypt.hash(info.password, saltRounds);
+    info.password = passwordHash;
+    const obj = await db.addUser(info);
+    console.log(obj);
+    res.status(200).send(obj);
+  }
+};
 
 exports.getUA = async (req, res) => {
   const email = req.query.email;
