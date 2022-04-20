@@ -50,6 +50,7 @@ export default function MenuListProfile() {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
   const {setSettingsOpen} = React.useContext(globalContext);
+  const {setShow} = React.useContext(globalContext);
   const history = useHistory();
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
@@ -70,6 +71,7 @@ export default function MenuListProfile() {
   };
   const handleLogOut = () => {
     history.push('/');
+    setShow(true);
   };
 
   /**

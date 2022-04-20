@@ -112,9 +112,9 @@ export default function MenuListWS() {
                 <ClickAwayListener onClickAway={handleClose}>
                   <MenuList autoFocusItem={open} id="menu-list-grow"
                     onKeyDown={handleListKeyDown}>
-                          {workspaces.map((ws) => (
-                            <MenuItem onClick={handleClose2}>{ws}</MenuItem>
-                          ))}
+                    {workspaces.map((ws) => (
+                      <MenuItem onClick={handleClose2}>{ws}</MenuItem>
+                    ))}
                   </MenuList>
                 </ClickAwayListener>
               </Paper>

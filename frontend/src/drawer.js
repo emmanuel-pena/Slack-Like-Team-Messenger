@@ -87,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
   channelMenuSm: {
     display: 'none',
     [theme.breakpoints.between('xs', 'xs')]: {
-    display: 'flex',
+      display: 'flex',
       left: 130,
       fontSize: 10,
     },
@@ -258,6 +258,7 @@ const months = {
   11: 'Dec',
 };
 
+
 /**
  *
  * @param {any} props
@@ -272,18 +273,24 @@ export default function ResponsiveDrawer(props) {
 
   // GLOBAL CONTEXT
   const {userObj} = React.useContext(globalContext);
-  const {currentWorkspace, setWorkspace} = React.useContext(globalContext);
-  const {currentChannels, setChannels} = React.useContext(globalContext);
-  const {currentDmdWith, setDmdWith} = React.useContext(globalContext);
-  const {clickedDms, setClickedDms} = React.useContext(globalContext);
-  const {clickedUserId, setClickedUserId} = React.useContext(globalContext);
-  const {settingsOpen, setSettingsOpen} = React.useContext(globalContext);
+  const {updateChatlog} = React.useContext(globalContext);
+  const {currentWorkspace} = React.useContext(globalContext);
+  const {setChannels} = React.useContext(globalContext);
+  const {setDmdWith} = React.useContext(globalContext);
+  const {clickedDms} = React.useContext(globalContext);
+  const {clickedUserId} = React.useContext(globalContext);
   const {userStatus, setUserStatus} = React.useContext(globalContext);
   const {userName} = React.useContext(globalContext);
   const {currentChatlog, setChatlog} = React.useContext(globalContext);
-  const {currentChannel, setChannel} = React.useContext(globalContext);
+  const {currentChannel} = React.useContext(globalContext);
 
-  console.log('I am inside drawer!!');
+  const ws = new WebSocket('ws://localhost:8082');
+
+  ws.addEventListener('open', function(event) {
+    console.log('connected from drawer');
+  });
+
+  console.log('yolo swag');
 
   function dateFormat(chatItem) {
     const date1 = chatItem.date.split('-');
@@ -422,7 +429,8 @@ export default function ResponsiveDrawer(props) {
 
   useEffect(() => {
     getChatlog();
-  }, [currentChannel, currentWorkspace]);
+  }, [currentChannel, currentWorkspace, updateChatlog]);
+
   // --------------------------------------------------------------------------
 
   //  Object.values({currentChatlog})[0].sort(sortOrder);
@@ -456,157 +464,156 @@ export default function ResponsiveDrawer(props) {
   };
 
   const drawer = (
-      <div>
-        <div className={classes.toolbar}/>
-        <List className={classes.DMSnMentionsText}>
-          <ListItem button className={classes.sideIconsMargin} id = 'All DMs'
-            selected = {getSelected('All DMs')}
-            onClick={(event) => handleListItemClick1(event)}>
-            <QuestionAnswerTwoToneIcon
-              className={classes.sidebarIcons}/>
-            <div id = 'All DMs'
-              useStyles={{'fontSize': 'medium'}}>All DMs</div>
-          </ListItem>
-          <ListItem button id = 'Mentions'
-            selected = {getSelected('Mentions')}
-            onClick={(event) => handleListItemClick2(event)}>
-            <AlternateEmailIcon className={classes.sidebarIcons} />
-            <div id = 'Mentions'
-              useStyles={{'fontSize': 'medium'}}>Mentions</div>
-          </ListItem>
-        </List>
-        <ChannelsList />
-        <DmsList />
-      </div>
+    <div>
+      <div className={classes.toolbar}/>
+      <List className={classes.DMSnMentionsText}>
+        <ListItem button className={classes.sideIconsMargin} id = 'All DMs'
+          selected = {getSelected('All DMs')}
+          onClick={(event) => handleListItemClick1(event)}>
+          <QuestionAnswerTwoToneIcon
+            className={classes.sidebarIcons}/>
+          <div id = 'All DMs'
+            useStyles={{'fontSize': 'medium'}}>All DMs</div>
+        </ListItem>
+        <ListItem button id = 'Mentions'
+          selected = {getSelected('Mentions')}
+          onClick={(event) => handleListItemClick2(event)}>
+          <AlternateEmailIcon className={classes.sidebarIcons} />
+          <div id = 'Mentions'
+            useStyles={{'fontSize': 'medium'}}>Mentions</div>
+        </ListItem>
+      </List>
+      <ChannelsList />
+      <DmsList />
+    </div>
   );
 
   const container = window !==
     undefined ? () => window().document.body : undefined;
 
   return (
-      <div className={classes.back}>
-        <CssBaseline />
-        <AppBar position="Absolute" className={classes.appBar}>
-          <Toolbar className='toolbar'>
-            <span className={classes.workspaceName}>
-              <IconButton onClick={handleDrawerToggle}>
-                <MenuIcon className={`${classes.menuButtonMed}
-              ${classes.menuButtonSm}`} /></IconButton>
-              {currentWorkspace}
-            </span>
-            <IconButton
-              color="black"
-              className={classes.menuButtonDesktop}
-            >
-              <MenuListWS />
-            </IconButton>
-            <div className={classes.search}>
-              <InputBase
-                placeholder="Search..."
-                classes={{
-                  root: classes.inputRoot,
-                  input: classes.inputInput,
-                }}
-                inputProps={{'aria-label': 'search'}}
-                endAdornment={<SearchIcon />}
-              />
-            </div>
-            <div className={classes.userIconTopCorner}>
-              <MenuListProfile />
-            </div>
-            <IconButton
-              color="black"
-              aria-label="open drawer"
-              edge="start"
-              className={classes.channelMenuSm}
-            >
-              <MenuListCH />
-            </IconButton>
-            <IconButton
-              color="black"
-              aria-label="open drawer"
-              edge="start"
-              className={classes.wsMenuSm}
-            >
-              <MenuListWS />
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-        <nav className={classes.drawer}
-          aria-label="mailbox folders">
-          {/* The implementation can be swapped
-          * with js to avoid SEO duplication of links. */}
-          <Hidden smUp implementation="css">
-            <Drawer
-              container={container}
-              variant="temporary"
-              anchor={theme.direction === 'rtl' ? 'right' : 'left'}
-              open={mobileOpen}
-              onClose={handleDrawerToggle}
+    <div className={classes.back}>
+      <CssBaseline />
+      <AppBar position="Absolute" className={classes.appBar}>
+        <Toolbar className='toolbar'>
+          <span className={classes.workspaceName}>
+            <IconButton onClick={handleDrawerToggle}>
+              <MenuIcon className={`${classes.menuButtonMed}
+            ${classes.menuButtonSm}`} /></IconButton>
+            {currentWorkspace}
+          </span>
+          <IconButton
+            color="black"
+            className={classes.menuButtonDesktop}
+          >
+            <MenuListWS />
+          </IconButton>
+          <div className={classes.search}>
+            <InputBase
+              placeholder="Search..."
               classes={{
-                paper: classes.drawerPaper,
+                root: classes.inputRoot,
+                input: classes.inputInput,
               }}
-              ModalProps={{
-                keepMounted: true, // Better open performance on mobile.
-              }}
-            >
-              {drawer}
-            </Drawer>
-            <LabelBottomNavigation className={classes.bottomNavBarMobile}/>
-          </Hidden>
-          <Hidden smDown implementation="css">
-            <Drawer
-              classes={{
-                paper: classes.drawerPaper,
-              }}
-              variant="permanent"
-              open
-            >
-              {drawer}
-            </Drawer>
-          </Hidden>
-        </nav>
-        <main className={classes.main}>
-          <div className={classes.inner1}>
-            <div className={classes.beginnings}> Welcome to Beginnings! </div>
-              {currentChatlog.map((chatItem) => (
-                <>
-                <Divider />
-                <ListItem>
-                  <ListItemAvatar>
-                    <Avatar>
-                      <ImageIcon />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText primary={<div style=
+              inputProps={{'aria-label': 'search'}}
+              endAdornment={<SearchIcon />}
+            />
+          </div>
+          <div className={classes.userIconTopCorner}>
+            <MenuListProfile />
+          </div>
+          <IconButton
+            color="black"
+            aria-label="open drawer"
+            edge="start"
+            className={classes.channelMenuSm}
+          >
+            <MenuListCH />
+          </IconButton>
+          <IconButton
+            color="black"
+            aria-label="open drawer"
+            edge="start"
+            className={classes.wsMenuSm}
+          >
+            <MenuListWS />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+      <nav className={classes.drawer}
+        aria-label="mailbox folders">
+        {/* The implementation can be swapped
+        * with js to avoid SEO duplication of links. */}
+        <Hidden smUp implementation="css">
+          <Drawer
+            container={container}
+            variant="temporary"
+            anchor={theme.direction === 'rtl' ? 'right' : 'left'}
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            classes={{
+              paper: classes.drawerPaper,
+            }}
+            ModalProps={{
+              keepMounted: true, // Better open performance on mobile.
+            }}
+          >
+            {drawer}
+          </Drawer>
+          <LabelBottomNavigation className={classes.bottomNavBarMobile}/>
+        </Hidden>
+        <Hidden smDown implementation="css">
+          <Drawer
+            classes={{
+              paper: classes.drawerPaper,
+            }}
+            variant="permanent"
+            open
+          >
+            {drawer}
+          </Drawer>
+        </Hidden>
+      </nav>
+      <main className={classes.main}>
+        <div className={classes.inner1}>
+          {currentChatlog.map((chatItem) => (
+            <>
+              <Divider />
+              <ListItem>
+                <ListItemAvatar>
+                  <Avatar>
+                    <ImageIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText primary={<div style=
+                  {{
+                    display: 'inline-block',
+                  }}><Typography type="body2" style=
                     {{
+                      color: 'black',
                       display: 'inline-block',
-                    }}><Typography type="body2" style=
-                      {{
-                        color: 'black',
-                        display: 'inline-block',
-                        fontSize: 13,
-                      }}>{chatItem.from} &nbsp;</Typography>
-                    <Typography type="body2" style=
-                      {{
-                        color: 'grey',
-                        display: 'inline-block',
-                        fontSize: 12,
-                      }}>{dateFormat(chatItem)}</Typography></div>} secondary=
-                    {<Typography type="body2" style=
-                      {{
-                        color: 'black',
-                        fontSize: 16,
-                        }}>{chatItem.content}</Typography>} />
-                  </ListItem>
-                  </>
-              ))}
-                </div>
-        </main>
-        <div className={classes.inner2}>
-          <Chatbox className={classes.inner2} />
+                      fontSize: 13,
+                    }}>{chatItem.from} &nbsp;</Typography>
+                  <Typography type="body2" style=
+                    {{
+                      color: 'grey',
+                      display: 'inline-block',
+                      fontSize: 12,
+                    }}>{dateFormat(chatItem)}</Typography></div>} secondary=
+                  {<Typography type="body2" style=
+                    {{
+                      color: 'black',
+                      fontSize: 16,
+                    }}>{chatItem.content}</Typography>} />
+              </ListItem>
+            </>
+          ))}
         </div>
+      </main>
+      <div className={classes.inner2}>
+        <Chatbox className={classes.inner2} />
       </div>
+    </div>
   );
 }
 // source: https://material-ui.com/components/drawers/

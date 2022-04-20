@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import ResponsiveDrawer from './drawer';
 import Login from './Login';
 import Signup from './Signup';
@@ -33,12 +33,14 @@ import {GlobalProvider} from './globalContext';
  *
  * @return {object} JSX
  */
+const ws = new WebSocket('ws://localhost:8082');
 function App() {
 // const [dummy, setDummy] = React.useState('Click the button!');
 // const [emoji, setEmoji] = React.useState(false);
 // const [chatLog, setChat] = React.useState({});
 //  const temp = userInfo;
 //  setInfo(temp);
+  const [updateChatlog, setUpdateChatlog] = React.useState(false);
   const [newLogin, setNewLogin] = React.useState(false);
   const [show, setShow] = React.useState(true);
   const [userObj, setUserObj] = React.useState(null);
@@ -56,6 +58,12 @@ function App() {
   const [userStatus, setUserStatus] = React.useState('Active');
   const [userName] = React.useState('PLACEHOLDER_USER');
 
+  useEffect(() => {
+    ws.addEventListener('message', function(event) {
+      setUpdateChatlog(!updateChatlog);
+    });
+  });
+
   return (
     <BrowserRouter>
       <Switch>
@@ -64,25 +72,25 @@ function App() {
         </Route>
 
         <GlobalProvider value={{
-          show, setShow,
+          show, setShow, updateChatlog, setUpdateChatlog,
           newLogin, setNewLogin, currentChatlog,
           userObj, setUserObj, mobileOpen,
           setMobileOpen, currentChannels, currentDmdWith,
-          setChannel, clickedDms, setClickedDms, setDmdWith,
+          setChannel, setDmdWith,
           clickedUserId, setClickedUserId, setChannels,
-          currentWorkspace, setWorkspace, setMobileOpen, settingsOpen,
+          currentWorkspace, setWorkspace, settingsOpen,
           setSettingsOpen, userStatus, setUserStatus, userName,
-          currentChannel, setChannel, clickedDms, setClickedDms,
-          clickedUserId, setClickedUserId, setChatlog, currentChannels,
+          currentChannel, clickedDms, setClickedDms,
+          setChatlog,
         }}>
-        <Route path="/home" exact>
-          <ResponsiveDrawer />
-        </Route>
+          <Route path="/home" exact>
+            <ResponsiveDrawer />
+          </Route>
 
           <Route path="/">
             {show ? <Login /> : <></>}
           </Route>
-          </GlobalProvider>
+        </GlobalProvider>
       </Switch>
     </BrowserRouter>
   );

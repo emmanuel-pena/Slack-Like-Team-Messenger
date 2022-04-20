@@ -48,10 +48,10 @@ export default function DmsList() {
 
   const handleClickUser = (event) => {
     setMobileOpen(false);
-      setClickedDms('true');
-      setChannel(event.target.innerText);
-      setClickedUserId(event.currentTarget.id);
-      console.log(clickedDms);
+    setClickedDms('true');
+    setChannel(event.target.innerText);
+    setClickedUserId(event.currentTarget.id);
+    console.log(clickedDms);
   };
 
   const handleClickAdd = () => {

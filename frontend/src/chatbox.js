@@ -14,16 +14,13 @@ const useStyles = makeStyles((theme) => ({
     color: 'black',
     fontSize: 'large',
   },
-  placeholder: {
-    color: 'black',
-    fontSize: 'large',
-  },
-  placeholder: {
-    color: 'black',
-    fontSize: 'large',
-  },
 }));
 
+const ws = new WebSocket('ws://localhost:8082');
+
+ws.addEventListener('open', () => {
+  console.log('connected from chatbox');
+});
 
 export default function Chatbox() {
   const classes = useStyles();
@@ -33,6 +30,7 @@ export default function Chatbox() {
   const {clickedDms} = React.useContext(globalContext);
   const {clickedUserId} = React.useContext(globalContext);
   const {setChatlog} = React.useContext(globalContext);
+  const {updateChatlog, setUpdateChatlog} = React.useContext(globalContext);
 
   const [placeholder, setPlaceholder] =
     React.useState('Message ' + Object.values({currentChannel})[0]);
@@ -113,25 +111,27 @@ export default function Chatbox() {
         const args = {id: param1, ws: param2, cn: param3, content: param4};
         console.log(args);
 
-          fetch('http://localhost:3010/v0/channelschat', {
-            method: 'POST',
-            body: JSON.stringify(args),
-            headers: {
-              'Content-Type': 'application/json',
-            },
+        fetch('http://localhost:3010/v0/channelschat', {
+          method: 'POST',
+          body: JSON.stringify(args),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+          .then((res) => {
+            if (!res.ok) {
+              throw res;
+            }
+            console.log('fetched post channels');
+            // setUpdateChatlog(!updateChatlog);
+            getChatlog();
+            ws.send('new chatlog');
+            return;
           })
-            .then((res) => {
-              if (!res.ok) {
-                throw res;
-              }
-              console.log('fetched post channels');
-              getChatlog();
-              return;
-            })
-            .catch((err) => {
-              console.log(err);
-              alert('Error pushing to channels chat');
-            });
+          .catch((err) => {
+            console.log(err);
+            alert('Error pushing to channels chat');
+          });
       } else if (Object.values({clickedDms})[0] === 'true') {
         console.log('pushing to dms!!!');
 
@@ -159,6 +159,8 @@ export default function Chatbox() {
             }
             console.log('fetched post dms');
             getChatlog();
+            // setUpdateChatlog(!updateChatlog);
+            ws.send('new chatlog');
             return;
           })
           .catch((err) => {

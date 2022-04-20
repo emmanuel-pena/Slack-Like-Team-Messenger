@@ -381,27 +381,27 @@ export default function Signup() {
     try {
       console.log('inside createUser)');
 
-        setSignUpMessage('waiting');
+      setSignUpMessage('waiting');
 
-        const param1 = values.first;
-        const param2 = values.last;
-        const param3 = values.username;
-        const param4 = values.email;
-        const param5 = values.password;
+      const param1 = values.first;
+      const param2 = values.last;
+      const param3 = values.username;
+      const param4 = values.email;
+      const param5 = values.password;
 
       const body = {
         first: param1, last: param2,
         username: param3, email: param4, password: param5,
       };
-        console.log(body);
+      console.log(body);
 
       fetch('http://localhost:3010/v0/user', {
-          method: 'POST',
-          body: JSON.stringify(body),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
         .then((res) => {
           if (res.status === 409) {
             alert('User already exists');
@@ -415,10 +415,10 @@ export default function Signup() {
 
             return;
           }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     } catch (e) {
 
     }
@@ -426,14 +426,14 @@ export default function Signup() {
 
   const creationResponse = (message) => {
     if (message === 'waiting') {
-     return (
-      <CircularProgress/>
-     );
-     }
+      return (
+        <CircularProgress/>
+      );
+    }
     return (
-    message.length > 0 ?
-      <Alert severity= {`success`}>
-        {message}
+      message.length > 0 ?
+        <Alert severity= {`success`}>
+          {message}
         </Alert> :
         null
     );
@@ -469,7 +469,7 @@ export default function Signup() {
 
     if (values.password === values.confirmPassword &&
                   values.password.match(pwd)) {
-        pOk = true;
+      pOk = true;
     }
 
     if (values.first === '' || values.last === '' ||
@@ -561,7 +561,7 @@ export default function Signup() {
                   alt='' />
               </div>
 
-            <div className={classes.formBody}
+              <div className={classes.formBody}
                 style={{
                   backgroundColor: 'transparent',
                   backgroundColor: 'rgba(255,255,255,0.5)'}}>
@@ -615,117 +615,117 @@ export default function Signup() {
 
                 <div className={classes.row1}>
                   <div className={classes.username}>
-          <InputLabel htmlFor="filled-adornment-password"
-                    style={{
-                      fontSize: 12,
-                      fontFamily: 'Josefin Sans, cursive',
-    color: (usernameOk === false && clickedSignup === true) ? 'red' : 'black',
-                    }} >
+                    <InputLabel htmlFor="filled-adornment-password"
+                      style={{
+                        fontSize: 12,
+                        fontFamily: 'Josefin Sans, cursive',
+                        color: (usernameOk === false && clickedSignup === true) ? 'red' : 'black',
+                      }} >
             Username *</InputLabel>
-          <FilledInput
-            required
-            value={values.username}
-            onChange={handleChange('username')}
-            label="Username"
-            placeholder="Username"
+                    <FilledInput
+                      required
+                      value={values.username}
+                      onChange={handleChange('username')}
+                      label="Username"
+                      placeholder="Username"
                       className={classes.usernameInput}
-            style={{
-              backgroundColor: 'white',
-            }}
-            margin="dense"
+                      style={{
+                        backgroundColor: 'white',
+                      }}
+                      margin="dense"
                     />
-                    </div>
-
-                  <div className={classes.email}>
-          <InputLabel htmlFor="filled-adornment-password"
-                    style={{
-                      fontSize: 12,
-                      fontFamily: 'Josefin Sans, cursive',
-       color: (emailOk === false && clickedSignup === true) ? 'red' : 'black',
-                    }} >
-            Email Address *</InputLabel>
-          <FilledInput
-            required
-            value={values.email}
-            onChange={handleChange('email')}
-            label="Email Address"
-            placeholder="Email Address"
-                      className={classes.emailInput}
-            style={{
-              backgroundColor: 'white',
-            }}
-            margin="dense"
-                    />
-                    </div>
                   </div>
 
-                <div className={classes.row2}>
-                  <div className={classes.password}>
-          <InputLabel htmlFor="filled-adornment-password"
-                    style={{
-                      fontSize: 12,
-                      fontFamily: 'Josefin Sans, cursive',
-   color: (passwordsOk === false && clickedSignup === true) ? 'red' : 'black',
-                    }} >
-            Password (length {'>'} 5 and contain a number) *</InputLabel>
-          <FilledInput
-            id="filled-adornment-password"
-            type={values.showPassword ? 'text' : 'password'}
-            value={values.password}
-            onChange={handleChange('password')}
-            placeholder="Password"
-                      className={classes.passwordInput}
-            style={{
-              backgroundColor: 'white',
-            }}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {values.showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            }
-                    />
-                    </div>
-
-                  <div className={classes.confirm}>
-          <InputLabel htmlFor="filled-adornment-password"
-                    style={{
-                      fontSize: 12,
-                      fontFamily: 'Josefin Sans, cursive',
-   color: (passwordsOk === false && clickedSignup === true) ? 'red' : 'black',
-                    }} >
-            Confirm Password *</InputLabel>
-          <FilledInput
-            id="filled-adornment-password"
-            type={values.showPassword ? 'text' : 'password'}
-            value={values.confirmPassword}
-            onChange={handleChange('confirmPassword')}
-            placeholder="Confirmed Password"
-                      className={classes.confirmInput}
-            style={{
-              backgroundColor: 'white',
-            }}
+                  <div className={classes.email}>
+                    <InputLabel htmlFor="filled-adornment-password"
+                      style={{
+                        fontSize: 12,
+                        fontFamily: 'Josefin Sans, cursive',
+                        color: (emailOk === false && clickedSignup === true) ? 'red' : 'black',
+                      }} >
+                        Email Address *</InputLabel>
+                    <FilledInput
+                      required
+                      value={values.email}
+                      onChange={handleChange('email')}
+                      label="Email Address"
+                      placeholder="Email Address"
+                      className={classes.emailInput}
+                      style={{
+                        backgroundColor: 'white',
+                      }}
+                      margin="dense"
                     />
                   </div>
                 </div>
 
-                              <div className={classes.buttons}>
-          <Button style={{backgroundColor: 'black', color: 'white'}}
-                  onClick={handleSignUp}>Sign Up</Button>
-              </div>
+                <div className={classes.row2}>
+                  <div className={classes.password}>
+                    <InputLabel htmlFor="filled-adornment-password"
+                      style={{
+                        fontSize: 12,
+                        fontFamily: 'Josefin Sans, cursive',
+                        color: (passwordsOk === false && clickedSignup === true) ? 'red' : 'black',
+                      }} >
+            Password (length {'>'} 5 and contain a number) *</InputLabel>
+                    <FilledInput
+                      id="filled-adornment-password"
+                      type={values.showPassword ? 'text' : 'password'}
+                      value={values.password}
+                      onChange={handleChange('password')}
+                      placeholder="Password"
+                      className={classes.passwordInput}
+                      style={{
+                        backgroundColor: 'white',
+                      }}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={handleClickShowPassword}
+                            onMouseDown={handleMouseDownPassword}
+                            edge="end"
+                          >
+                            {values.showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      }
+                    />
+                  </div>
+
+                  <div className={classes.confirm}>
+                    <InputLabel htmlFor="filled-adornment-password"
+                      style={{
+                        fontSize: 12,
+                        fontFamily: 'Josefin Sans, cursive',
+                        color: (passwordsOk === false && clickedSignup === true) ? 'red' : 'black',
+                      }} >
+            Confirm Password *</InputLabel>
+                    <FilledInput
+                      id="filled-adornment-password"
+                      type={values.showPassword ? 'text' : 'password'}
+                      value={values.confirmPassword}
+                      onChange={handleChange('confirmPassword')}
+                      placeholder="Confirmed Password"
+                      className={classes.confirmInput}
+                      style={{
+                        backgroundColor: 'white',
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className={classes.buttons}>
+                  <Button style={{backgroundColor: 'black', color: 'white'}}
+                    onClick={handleSignUp}>Sign Up</Button>
+                </div>
               </div>
 
-          {signUpMessage ? creationResponse(signUpMessage) : signUpMessage}
+              {signUpMessage ? creationResponse(signUpMessage) : signUpMessage}
 
 
             </Box>
-            </div>
+          </div>
 
         </React.Fragment>
       </Dialog>

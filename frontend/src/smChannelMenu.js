@@ -114,9 +114,9 @@ export default function MenuListWS() {
                 <ClickAwayListener onClickAway={handleClose}>
                   <MenuList autoFocusItem={open} id="menu-list-grow"
                     onKeyDown={handleListKeyDown}>
-                          {currentChannels.map((cn) => (
-                            <MenuItem onClick={handleClose2}>{cn}</MenuItem>
-                          ))}
+                    {currentChannels.map((cn) => (
+                      <MenuItem onClick={handleClose2}>{cn}</MenuItem>
+                    ))}
                   </MenuList>
                 </ClickAwayListener>
               </Paper>
