@@ -2,7 +2,6 @@ import React, {useEffect} from 'react';
 import ResponsiveDrawer from './drawer';
 import Login from './Login';
 import Signup from './Signup';
-import Box from '@mui/material/Box';
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
 // import Emoji from './Emoji';
 // // testing git push
@@ -67,8 +66,8 @@ function App() {
   return (
     <BrowserRouter>
       <Switch>
-        <Route path="/signup" exact>
-          <Signup />
+        <Route exact path="/signup">
+          <Signup/>
         </Route>
 
         <GlobalProvider value={{
@@ -83,12 +82,12 @@ function App() {
           currentChannel, clickedDms, setClickedDms,
           setChatlog,
         }}>
-          <Route path="/home" exact>
-            <ResponsiveDrawer />
+          <Route exact path="/home">
+            <ResponsiveDrawer/>
           </Route>
 
-          <Route path="/">
-            {show ? <Login /> : <></>}
+          <Route exact path="/">
+            <Login/>
           </Route>
         </GlobalProvider>
       </Switch>

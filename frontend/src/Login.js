@@ -125,6 +125,7 @@ export default function Login() {
           if (!res.ok) {
             if (res.status === 401) {
               console.log('401 code means invalid credentials');
+              alert('Invalid credentials');
             }
             throw res;
           }
