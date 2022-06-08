@@ -35,14 +35,21 @@ app.get('/v0/dummy', dummy.get);
 app.post('/v0/user', user.createUser);
 
 app.get('/v0/ua', user.getUA);
+
 app.get('/v0/channelschat', user.getChannelChat);
 app.post('/v0/channelschat', user.pushToChannel);
+
 app.get('/v0/dmschat', user.getDmsWithUser);
 app.post('/v0/dmschat', user.pushToDmsWithUser);
+
 app.get('/v0/dmdusers', user.getDmdUsers);
+
 app.get('/v0/channelslist', user.getChannels);
-app.get('/v0/channelslist', user.addChannels);
+app.post('/v0/channelslist', user.addChannel);
+
 app.get('/v0/workspaceslist', user.getWorkspaces);
+app.post('/v0/workspaceslist', user.addWorkspace);
+
 app.get('/v0/data', user.getActiveDms);             //idk requirement for this
 app.get('/v0/data', user.getAllDms);                //idk requirement for this
 

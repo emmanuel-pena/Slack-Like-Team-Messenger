@@ -316,20 +316,16 @@ paths:
 
     post:
       description: Adds a new channel to the current workspace
-      parameters:
-        - name: ws
-          in: query
-          description: current workspace
-          schema:
-            type: string
-        - name: cn
-          in: query
-          description: channel name to add
-          schema:
-            type: string
+      requestBody:
+        description: The new channel name being added and the current workspacename
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserReqAddChannel'
       responses:
         201:
-          description: Succesful
+          description: Succesfully added new channel
         400:
           description: Bad Request
 
@@ -362,6 +358,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+
+    post:
+      description: Adds a new workspace
+      requestBody:
+        description: The new workspacename being added and the array of admin ids for it
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserReqAddWorkspace'
+      responses:
+        201:
+          description: Succesfully created new workspace
+        400:
+          description: Bad Request
 
 
 components:
@@ -454,8 +465,6 @@ components:
         email:
           type: string
           format: email
-        role:
-          type: string
         workspaces:
            type: array
            items:
@@ -508,6 +517,9 @@ components:
     workspaceName:
       type: string
 
+    ids:
+      type: string
+
     UserReq:
       type: object
       properties:
@@ -537,6 +549,31 @@ components:
         - ws
         - cn
         - content
+
+    UserReqAddChannel:
+      type: object
+      properties:
+        channelName:
+          type: string
+        workspacename:
+          type: string
+      required:
+        - channelName
+        - workspacename
+
+    UserReqAddWorkspace:
+      type: object
+      properties:
+        workspacename:
+          type: string
+        admins:
+          type: array
+          items:  
+            $ref: '#/components/schemas/ids'
+      required:
+        - workspacename
+        - admins
+
 
     UserReqDms:
       type: object

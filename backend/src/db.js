@@ -102,7 +102,7 @@ exports.getUA = async (email) => {
   };
   const { rows } = await pool.query(query);
   console.log(rows);
-  const ua = {id: '', name: '', password: '', email: '', role: '', workspaces: []};
+  const ua = {id: '', name: '', password: '', email: '', workspaces: []};
 
 
   if (rows.length > 0) {
@@ -111,7 +111,6 @@ exports.getUA = async (email) => {
     ua["name"] = rows[0].fullName;
     ua.password = rows[0].password_hash;
     ua["email"] = rows[0].email;
-    ua.role = rows[0].accRole;
     ua.workspaces = rows[0].workspaces;
     return ua;
   }
@@ -345,22 +344,47 @@ exports.getChannels = async (ws) => {
   }
 };
 
-exports.addChannels = async (ws, cn) => {
+exports.addChannel = async (ws, cn) => {
+
   const select = 'INSERT INTO Channels(workspacename, channelname) VALUES ($1, $2)';
+
   const query = {
     text: select,
     values: [ws, cn],
   };
 
+  await pool.query(query);
 
-  const {rows} = await pool.query(query);
+};
 
-  if (rows.length > 0) {
-    return;
-  }
-  else {
-    return null;
-  }
+exports.addWorkspace = async (ws, ad) => {
+
+  const select = 'INSERT INTO Workspaces(workspacename, admins) VALUES ($1, $2)';
+
+  const query = {
+    text: select,
+    values: [ws, ad],
+  };
+
+  await pool.query(query);
+
+  await addInitialChannel(ws);
+
+};
+
+addInitialChannel = async (ws) => {
+
+  const temp = [];
+  const emptyArray = JSON.stringify(temp);
+
+  const select = 'INSERT INTO Channels(workspacename, channelname, chatlog) VALUES ($1, $2, $3)';
+
+  const query = {
+    text: select,
+    values: [ws, '# General', emptyArray],
+  };
+
+  await pool.query(query);
 };
 
 exports.getActiveDms = async (id, ws) => {

@@ -124,15 +124,33 @@ exports.getChannels = async (req, res) => {
 };
 
 
-exports.addChannels = async (req, res) => {
-  const workspacename = req.query.ws;
-  const channel = req.query.cn;
+exports.addChannel = async (req, res) => {
+  const info = req.body;
 
-  const channelsList = await db.getChannels(workspacename, channel);
-  if (channelsList === null) {
-    res.status(404).send();
-  } else {
+  const channelName = info.channelName;
+  const workspacename = info.workspacename;
+
+  if (channelName && workspacename) {
+    await db.addChannel(workspacename, channelName);
+
     res.status(201).send();
+  } else {
+    res.status(400).send();
+  }
+};
+
+exports.addWorkspace = async (req, res) => {
+  const info = req.body;
+
+  const workspacename = info.workspacename;
+  const admins = info.admins;
+
+  if (admins && workspacename) {
+    await db.addWorkspace(workspacename, admins);
+
+    res.status(201).send();
+  } else {
+    res.status(400).send();
   }
 };
 

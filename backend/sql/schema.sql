@@ -10,7 +10,6 @@ CREATE TABLE Users(
    email VARCHAR(32) NOT NULL,
    firstName VARCHAR(32),
    lastName VARCHAR(32),
-   accRole VARCHAR(32) DEFAULT 'member',
    active BOOLEAN DEFAULT false,
    fullName  VARCHAR(32),
    password_hash TEXT,
@@ -23,7 +22,8 @@ CREATE TABLE Users(
 -- WORKSPACES TABLE --
 DROP TABLE IF EXISTS Workspaces;
 CREATE TABLE Workspaces(
-    workspacename VARCHAR(32) PRIMARY KEY
+    workspacename VARCHAR(32) PRIMARY KEY,
+    admins jsonb
 );
 
 -- CHANNELS TABLE --

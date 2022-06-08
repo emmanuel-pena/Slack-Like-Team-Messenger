@@ -3,16 +3,16 @@ INSERT INTO dummy (created) VALUES (current_timestamp);
 
 -- Populate Your Tables Here --
 DELETE FROM Users;
-INSERT INTO Users VALUES ('1', 'jc@ucsc.edu', 'Jack', 'Cooper', 'admin', NULL, 'Jack Cooper', '$2a$10$8y4LYm7f0qMnouiNMlg6puBNiy1siZi3bUEu5FKorTo8IPVxmOJYG', '["CSE 183 Summer 2021", "CSE 130"]', 'user1');
-INSERT INTO Users VALUES ('2', 'ep@ucsc.edu', 'Emmanuel', 'Pena', 'admin', NULL, 'Emmanuel Pena', '$2a$10$5TLsDwQXboHiXzTLSeZ01.5pjT76T3SQhyhulsSDST9fnoP.BT5x2', '["CSE 183 Summer 2021", "CSE 130"]', 'user2');
-INSERT INTO Users VALUES ('3', 'slug@ucsc.edu', 'Sammy', 'Slug', 'member', NULL, 'Sammy Slug', '$2a$10$FwbnonhdgakcpqlWpowVKudAy9Gdtu3LT45TDCux.WS5THA5Bxisi', '["CSE 183 Summer 2021", "Investors"]', 'user3');
-INSERT INTO Users VALUES ('4', 'turing@ucsc.edu', 'Alan', 'Turing', 'member', NULL, 'Alan Turing', '$2a$10$mLMIMS9KAKfQKWJsgc3rbuwoiY.kWNKEGxv054OHhlVEPTzCQ8sfq', '["CSE 183 Summer 2021", "Investors"]', 'user4');
+INSERT INTO Users VALUES ('1', 'jc@ucsc.edu', 'Jack', 'Cooper', NULL, 'Jack Cooper', '$2a$10$8y4LYm7f0qMnouiNMlg6puBNiy1siZi3bUEu5FKorTo8IPVxmOJYG', '["CSE 183 Summer 2021", "CSE 130"]', 'user1');
+INSERT INTO Users VALUES ('2', 'ep@ucsc.edu', 'Emmanuel', 'Pena', NULL, 'Emmanuel Pena', '$2a$10$5TLsDwQXboHiXzTLSeZ01.5pjT76T3SQhyhulsSDST9fnoP.BT5x2', '["CSE 183 Summer 2021", "CSE 130"]', 'user2');
+INSERT INTO Users VALUES ('3', 'slug@ucsc.edu', 'Sammy', 'Slug', NULL, 'Sammy Slug', '$2a$10$FwbnonhdgakcpqlWpowVKudAy9Gdtu3LT45TDCux.WS5THA5Bxisi', '["CSE 183 Summer 2021", "Investors"]', 'user3');
+INSERT INTO Users VALUES ('4', 'turing@ucsc.edu', 'Alan', 'Turing', NULL, 'Alan Turing', '$2a$10$mLMIMS9KAKfQKWJsgc3rbuwoiY.kWNKEGxv054OHhlVEPTzCQ8sfq', '["CSE 183 Summer 2021", "Investors"]', 'user4');
 
 -- Workspaces TABLE --
 DELETE FROM Workspaces;
-INSERT INTO Workspaces(workspacename) VALUES ('CSE 183 Summer 2021');
-INSERT INTO Workspaces(workspacename) VALUES ('CSE 130');
-INSERT INTO Workspaces(workspacename) VALUES ('Investors');
+INSERT INTO Workspaces(workspacename, admins) VALUES ('CSE 183 Summer 2021', '["1", "2"]');
+INSERT INTO Workspaces(workspacename, admins) VALUES ('CSE 130', '["1", "2"]');
+INSERT INTO Workspaces(workspacename, admins) VALUES ('Investors', '["1", "2"]');
 
 -- Channels TABLE POPULATION --
 DELETE FROM Channels;
