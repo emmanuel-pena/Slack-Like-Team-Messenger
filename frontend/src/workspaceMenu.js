@@ -1,4 +1,15 @@
-import React from 'react';
+import * as React from 'react';
+import Dialog from '@mui/material/Dialog';
+import ListItemText from '@mui/material/ListItemText';
+import ListItem from '@mui/material/ListItem';
+import List from '@mui/material/List';
+import Divider from '@mui/material/Divider';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import CloseIcon from '@mui/icons-material/Close';
+import Slide from '@mui/material/Slide';
+import {TransitionProps} from '@mui/material/transitions';
 import IconButton from '@material-ui/core/IconButton';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Grow from '@material-ui/core/Grow';
@@ -6,6 +17,12 @@ import Paper from '@material-ui/core/Paper';
 import Popper from '@material-ui/core/Popper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
+import AddIcon from '@mui/icons-material/Add';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 import {makeStyles} from '@material-ui/core/styles';
 import ArrowDropDownCircleIcon from '@material-ui/icons/ArrowDropDownCircle';
 
@@ -32,6 +49,15 @@ const useStyles = makeStyles((theme) => ({
 
 const userObj = JSON.parse(localStorage.getItem('user'));
 
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement;
+  },
+  ref: React.Ref<unknown>,
+) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 /**
  *@return{any} menu
  */
@@ -39,6 +65,9 @@ export default function MenuListWS() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
+  const [openAdding, setOpenAdding] = React.useState(false);
+  const [openNewName, setOpenNewName] = React.useState(false);
+  const [input, setInput] = React.useState('');
 
   console.log('I am inside workspace Menu!');
 
@@ -47,6 +76,23 @@ export default function MenuListWS() {
   const {setWorkspace} = React.useContext(globalContext);
   const {setChannel} = React.useContext(globalContext);
   const {setClickedDms} = React.useContext(globalContext);
+
+  const handleAddWorkspace = () => {
+    setOpenAdding(true);
+  };
+
+  const handleCloseAdding = () => {
+    setOpenAdding(false);
+  };
+
+  const handleClickOpenNewName = () => {
+    setOpenNewName(true);
+  };
+
+  const handleCloseNewName = () => {
+    setInput('');
+    setOpenNewName(false);
+  };
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
@@ -58,7 +104,7 @@ export default function MenuListWS() {
     setOpen(false);
   };
 
-  const handleClose2 = (event) => {
+  const handleSelectWorkspace = (event) => {
     if (anchorRef.current && anchorRef.current.contains(event.target)) {
       return;
     }
@@ -88,41 +134,153 @@ export default function MenuListWS() {
     prevOpen.current = open;
   }, [open]);
 
+  const handleInputChange = (event) => {
+    const currInput = event.target.value;
+    setInput(currInput);
+  };
+
+  const addExistingWorkspace = () => {
+
+  };
+
+  const addNewWorkspace = () => {
+    const name = input;
+    if (name === '') {
+
+    } else {
+      const admins = [];
+      admins.push(userObj.id);
+
+      console.log(admins);
+      const args = {workspacename: name, admins: admins};
+      console.log(args);
+
+      fetch('http://localhost:3010/v0/workspaceslist', {
+        method: 'POST',
+        body: JSON.stringify(args),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((res) => {
+          if (res.status !== 201) {
+            throw res;
+          }
+          console.log('fetched post workspaceslist');
+          (userObj.workspaces).push(name);
+          console.log(userObj.workspaces);
+          localStorage.setItem('user', JSON.stringify(userObj));
+          return;
+        })
+        .catch((err) => {
+          console.log(err);
+          alert('Error pushing adding workspace');
+        });
+    }
+
+    setOpenNewName(false);
+  };
+
   return (
-    <div className={classes.root}>
-      <div>
-        <IconButton
-          ref={anchorRef}
-          aria-controls={open ? 'menu-list-grow' : undefined}
-          aria-haspopup="true"
-          onClick={handleToggle}
-        >
-          <ArrowDropDownCircleIcon fontSize="large" style={{fill: 'white'}} />
-        </IconButton>
-        <Popper open={open} anchorEl={anchorRef.current}
-          role={undefined} transition disablePortal>
-          {({TransitionProps, placement}) => (
-            <Grow
-              {...TransitionProps}
-              style={{
-                transformOrigin: placement === 'bottom' ?
-                  'center top' : 'center bottom',
-              }}>
-              <Paper>
-                <ClickAwayListener onClickAway={handleClose}>
-                  <MenuList autoFocusItem={open} id="menu-list-grow"
-                    onKeyDown={handleListKeyDown}>
-                    {workspaces.map((ws) => (
-                      <MenuItem onClick={handleClose2}>{ws}</MenuItem>
-                    ))}
-                  </MenuList>
-                </ClickAwayListener>
-              </Paper>
-            </Grow>
-          )}
-        </Popper>
+    <>
+      <div className={classes.root}>
+        <div>
+          <IconButton
+            ref={anchorRef}
+            aria-controls={open ? 'menu-list-grow' : undefined}
+            aria-haspopup="true"
+            onClick={handleToggle}
+          >
+            <ArrowDropDownCircleIcon fontSize="large" style={{fill: 'white'}} />
+          </IconButton>
+          <Popper open={open} anchorEl={anchorRef.current}
+            role={undefined} transition disablePortal>
+            {({TransitionProps, placement}) => (
+              <Grow
+                {...TransitionProps}
+                style={{
+                  transformOrigin: placement === 'bottom' ?
+                    'center top' : 'center bottom',
+                }}>
+                <Paper>
+                  <ClickAwayListener onClickAway={handleClose}>
+                    <MenuList autoFocusItem={open} id="menu-list-grow"
+                      onKeyDown={handleListKeyDown}>
+                      <Button style={{width: '238px', textAlign: 'center', backgroundColor: '#3F0E40'}}
+                        onClick={handleAddWorkspace}
+                        variant='contained' endIcon={<AddIcon />}>
+                        Add new workspace
+                      </Button>
+                      {workspaces.map((ws) => (
+                        <MenuItem onClick={handleSelectWorkspace}>{ws}</MenuItem>
+                      ))}
+                    </MenuList>
+                  </ClickAwayListener>
+                </Paper>
+              </Grow>
+            )}
+          </Popper>
+        </div>
       </div>
-    </div>
+
+      <div>
+        <Dialog
+          fullScreen
+          open={openAdding}
+          onClose={handleCloseAdding}
+          TransitionComponent={Transition}
+        >
+          <AppBar sx={{backgroundColor: '#3F0E40', position: 'relative'}}>
+            <Toolbar>
+              <IconButton
+                edge="start"
+                color="inherit"
+                onClick={handleCloseAdding}
+                aria-label="close"
+              >
+                <CloseIcon />
+              </IconButton>
+              <Typography sx={{ml: 2, flex: 1}} variant="h6" component="div">
+                Adding a workspace
+              </Typography>
+            </Toolbar>
+          </AppBar>
+          <List>
+            <ListItem button>
+              <ListItemText primary="Add an existing workspace" />
+            </ListItem>
+            <Divider />
+            <ListItem button onClick={handleClickOpenNewName}>
+              <ListItemText
+                primary="Create new workspace"
+              />
+            </ListItem>
+            <Divider />
+          </List>
+        </Dialog>
+      </div>
+
+      <div>
+        <Dialog open={openNewName} onClose={handleCloseNewName}>
+          <DialogTitle style={{color: '#3F0E40'}}>Enter name of workspace to create</DialogTitle>
+          <DialogContent>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Workspace name"
+              fullWidth
+              variant="standard"
+              onChange={handleInputChange}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseNewName} variant='contained' style={{backgroundColor: '#3F0E40'}}>Cancel</Button>
+            <Button onClick={addNewWorkspace} variant='contained' style={{backgroundColor: '#3F0E40'}}>Ceate</Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    </>
   );
 }
 // source: https://material-ui.com/components/menus/

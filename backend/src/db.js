@@ -121,7 +121,6 @@ exports.getUA = async (email) => {
 
 
 exports.getChannelChat = async (ws, cn) => {
-  console.log('1) inside db.js');
   const select = 'SELECT chatlog FROM Channels WHERE workspacename = $1 AND channelname = $2';
 
   const query = {
@@ -141,7 +140,6 @@ exports.getChannelChat = async (ws, cn) => {
 };
 
 exports.getDmsWithUser = async (id, idWith, ws) => {
-  console.log('db.js) inside db.js');
   const select = 'SELECT chatlog FROM Dms WHERE userID LIKE $1 AND withID LIKE $2 AND workspacename = $3';
 
   const query = {
@@ -363,12 +361,14 @@ exports.addWorkspace = async (ws, ad) => {
 
   const query = {
     text: select,
-    values: [ws, ad],
+    values: [ws, JSON.stringify(ad)],
   };
 
   await pool.query(query);
 
+
   await addInitialChannel(ws);
+  await getUserCurrentWorkspacesThenUpdate(ws, ad[0]);
 
 };
 
@@ -382,6 +382,39 @@ addInitialChannel = async (ws) => {
   const query = {
     text: select,
     values: [ws, '# General', emptyArray],
+  };
+
+  await pool.query(query);
+};
+
+getUserCurrentWorkspacesThenUpdate = async (ws, id) => {
+
+
+  const select = 'SELECT workspaces FROM Users WHERE id = $1';
+
+  const query = {
+    text: select,
+    values: [id],
+  };
+
+  const {rows} = await pool.query(query);
+  console.log(rows[0].workspaces);
+
+  const updatedWorkspaces = rows[0].workspaces;
+  updatedWorkspaces.push(ws);
+  console.log(updatedWorkspaces);
+
+  await updateWorkspacesOfUser(id, updatedWorkspaces);
+};
+
+updateWorkspacesOfUser = async (id, data) => {
+
+
+  const select = 'UPDATE Users SET WORKSPACES = $1 WHERE id = $2';
+
+  const query = {
+    text: select,
+    values: [JSON.stringify(data), id],
   };
 
   await pool.query(query);

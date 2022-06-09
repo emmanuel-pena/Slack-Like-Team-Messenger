@@ -40,6 +40,7 @@ function App() {
 //  const temp = userInfo;
 //  setInfo(temp);
   const [updateChatlog, setUpdateChatlog] = React.useState(false);
+  const [updateWorkspaces, setUpdateWorkspaces] = React.useState(false);
   const [newLogin, setNewLogin] = React.useState(false);
   const [show, setShow] = React.useState(true);
   const [userObj, setUserObj] = React.useState(null);
