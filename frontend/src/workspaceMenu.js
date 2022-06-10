@@ -67,6 +67,7 @@ export default function MenuListWS() {
   const anchorRef = React.useRef(null);
   const [openAdding, setOpenAdding] = React.useState(false);
   const [openNewName, setOpenNewName] = React.useState(false);
+  const [openExistingName, setOpenExistingName] = React.useState(false);
   const [input, setInput] = React.useState('');
 
   console.log('I am inside workspace Menu!');
@@ -92,6 +93,15 @@ export default function MenuListWS() {
   const handleCloseNewName = () => {
     setInput('');
     setOpenNewName(false);
+  };
+
+  const handleClickOpenExistingName = () => {
+    setOpenExistingName(true);
+  };
+
+  const handleCloseExistingName = () => {
+    setInput('');
+    setOpenExistingName(false);
   };
 
   const handleToggle = () => {
@@ -140,7 +150,46 @@ export default function MenuListWS() {
   };
 
   const addExistingWorkspace = () => {
+    const name = input;
+    if (name === '') {
 
+    } else {
+      const id = userObj.id;
+
+      if ((userObj.workspaces).includes(name)) {
+        alert('Already in workspace');
+      } else {
+        const args = {workspacename: name, id: id};
+        console.log(args);
+
+        fetch('http://localhost:3010/v0/userworkspaces', {
+          method: 'PUT',
+          body: JSON.stringify(args),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+          .then((res) => {
+            if (res.status === 404) {
+              alert('Workspace not found');
+              throw res;
+            } else if (!res.ok) {
+              throw res;
+            }
+            console.log('fetched put workspaceslist');
+            (userObj.workspaces).push(name);
+            console.log(userObj.workspaces);
+            localStorage.setItem('user', JSON.stringify(userObj));
+            return;
+          })
+          .catch((err) => {
+            console.log(err);
+            alert('Error joining workspace');
+          });
+      }
+    }
+
+    setOpenExistingName(false);
   };
 
   const addNewWorkspace = () => {
@@ -163,6 +212,10 @@ export default function MenuListWS() {
         },
       })
         .then((res) => {
+          if (res.status === 409) {
+            alert('Workspace already exists!');
+            throw res;
+          }
           if (res.status !== 201) {
             throw res;
           }
@@ -174,7 +227,7 @@ export default function MenuListWS() {
         })
         .catch((err) => {
           console.log(err);
-          alert('Error pushing adding workspace');
+          alert('Error creating workspace');
         });
     }
 
@@ -246,7 +299,7 @@ export default function MenuListWS() {
             </Toolbar>
           </AppBar>
           <List>
-            <ListItem button>
+            <ListItem button onClick={handleClickOpenExistingName}>
               <ListItemText primary="Add an existing workspace" />
             </ListItem>
             <Divider />
@@ -257,6 +310,27 @@ export default function MenuListWS() {
             </ListItem>
             <Divider />
           </List>
+        </Dialog>
+      </div>
+
+      <div>
+        <Dialog open={openExistingName} onClose={handleCloseExistingName}>
+          <DialogTitle style={{color: '#3F0E40'}}>Enter name of workspace to join</DialogTitle>
+          <DialogContent>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Workspace name"
+              fullWidth
+              variant="standard"
+              onChange={handleInputChange}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseExistingName} variant='contained' style={{backgroundColor: '#3F0E40'}}>Cancel</Button>
+            <Button onClick={addExistingWorkspace} variant='contained' style={{backgroundColor: '#3F0E40'}}>Join</Button>
+          </DialogActions>
         </Dialog>
       </div>
 

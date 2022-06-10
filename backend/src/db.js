@@ -355,7 +355,21 @@ exports.addChannel = async (ws, cn) => {
 
 };
 
-exports.addWorkspace = async (ws, ad) => {
+exports.joinWorkspace = async (ws, id) => {
+
+  const exists = await searchIfWorkspaceExists(ws);
+
+  if (exists === false) {
+    return 'not found';
+  } else if (exists === true) {
+    await getUserCurrentWorkspacesThenUpdate(ws, id);
+
+    return 'success';
+  }
+
+};
+
+exports.createWorkspace = async (ws, ad) => {
 
   const select = 'INSERT INTO Workspaces(workspacename, admins) VALUES ($1, $2)';
 
@@ -364,11 +378,19 @@ exports.addWorkspace = async (ws, ad) => {
     values: [ws, JSON.stringify(ad)],
   };
 
-  await pool.query(query);
+  const exists = await searchIfWorkspaceExists(ws);
 
+  if (exists === true) {
+    return 'conflict';
+  } else if (exists === false) {
 
-  await addInitialChannel(ws);
-  await getUserCurrentWorkspacesThenUpdate(ws, ad[0]);
+    await pool.query(query);
+
+    await addInitialChannel(ws);
+    await getUserCurrentWorkspacesThenUpdate(ws, ad[0]);
+
+    return 'created';
+  }
 
 };
 
@@ -389,7 +411,6 @@ addInitialChannel = async (ws) => {
 
 getUserCurrentWorkspacesThenUpdate = async (ws, id) => {
 
-
   const select = 'SELECT workspaces FROM Users WHERE id = $1';
 
   const query = {
@@ -409,7 +430,6 @@ getUserCurrentWorkspacesThenUpdate = async (ws, id) => {
 
 updateWorkspacesOfUser = async (id, data) => {
 
-
   const select = 'UPDATE Users SET WORKSPACES = $1 WHERE id = $2';
 
   const query = {
@@ -418,6 +438,24 @@ updateWorkspacesOfUser = async (id, data) => {
   };
 
   await pool.query(query);
+};
+
+searchIfWorkspaceExists = async (ws) => {
+
+  const select = 'SELECT * FROM Workspaces WHERE workspacename = $1';
+
+  const query = {
+    text: select,
+    values: [ws],
+  };
+
+  const {rows} = await pool.query(query);
+
+  if (rows.length > 0 && rows[0].workspacename === ws) {
+    return true;
+  } else {
+    return false;
+  }
 };
 
 exports.getActiveDms = async (id, ws) => {

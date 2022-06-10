@@ -139,19 +139,49 @@ exports.addChannel = async (req, res) => {
   }
 };
 
-exports.addWorkspace = async (req, res) => {
+exports.createWorkspace = async (req, res) => {
   const info = req.body;
 
   const workspacename = info.workspacename;
   const admins = info.admins;
 
-  if (admins && workspacename) {
-    await db.addWorkspace(workspacename, admins);
+  if (!admins || !workspacename) {
 
-    res.status(201).send();
-  } else {
     res.status(400).send();
   }
+
+  const result = await db.createWorkspace(workspacename, admins);
+
+  if (result === 'created') {
+    res.status(201).send();
+  } else if (result === 'conflict') {
+    res.status(409).send();
+  } else {
+    res.status(500).send();
+  }
+
+};
+
+exports.joinWorkspace = async (req, res) => {
+  const info = req.body;
+
+  const workspacename = info.workspacename;
+  const id = info.id;
+
+  if (!workspacename || !id) {
+    res.status(400).send();
+  } 
+
+  const result = await db.joinWorkspace(workspacename, id);
+
+  if (result === 'success') {
+    res.status(200).send();
+  } else if (result === 'not found') {
+    res.status(404).send();
+  } else {
+    res.status(500).send();
+  }
+
 };
 
 

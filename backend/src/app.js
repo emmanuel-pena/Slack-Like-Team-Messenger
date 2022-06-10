@@ -48,10 +48,13 @@ app.get('/v0/channelslist', user.getChannels);
 app.post('/v0/channelslist', user.addChannel);
 
 app.get('/v0/workspaceslist', user.getWorkspaces);
-app.post('/v0/workspaceslist', user.addWorkspace);
+app.post('/v0/workspaceslist', user.createWorkspace);
 
-app.get('/v0/data', user.getActiveDms);             //idk requirement for this
-app.get('/v0/data', user.getAllDms);                //idk requirement for this
+app.put('/v0/userworkspaces', user.joinWorkspace);
+
+
+app.get('/v0/data', user.getActiveDms);            //unf
+app.get('/v0/data', user.getAllDms);               //unf
 
 
 app.use((err, req, res, next) => {

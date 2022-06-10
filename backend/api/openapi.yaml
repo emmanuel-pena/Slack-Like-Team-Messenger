@@ -360,19 +360,44 @@ paths:
                 $ref: '#/components/schemas/Error'
 
     post:
-      description: Adds a new workspace
+      description: Creates a new workspace and adds it to user's workspaces
       requestBody:
         description: The new workspacename being added and the array of admin ids for it
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserReqAddWorkspace'
+              $ref: '#/components/schemas/UserReqCreateWorkspace'
       responses:
         201:
           description: Succesfully created new workspace
         400:
           description: Bad Request
+        409:
+          description: Conflict. Workspace already exists
+        500:
+          description: Internal server error
+
+
+  /userworkspaces:
+    put:
+      description: Adds a workspace to user's current workspaces
+      requestBody:
+        description: The new workspacename being added and the array of admin ids for it
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserReqJoinWorkspace'
+      responses:
+        200:
+          description: Succesfully joined new workspace
+        400:
+          description: Bad Request
+        404:
+          description: Workspace not found
+        500:
+          description: Internal server error
 
 
 components:
@@ -561,7 +586,7 @@ components:
         - channelName
         - workspacename
 
-    UserReqAddWorkspace:
+    UserReqCreateWorkspace:
       type: object
       properties:
         workspacename:
@@ -573,6 +598,17 @@ components:
       required:
         - workspacename
         - admins
+
+    UserReqJoinWorkspace:
+      type: object
+      properties:
+        workspacename:
+          type: string
+        id:
+          type: string
+      required:
+        - workspacename
+        - id
 
 
     UserReqDms:
