@@ -325,9 +325,13 @@ paths:
               $ref: '#/components/schemas/UserReqAddChannel'
       responses:
         201:
-          description: Succesfully added new channel
+          description: Succesfully created a new channel
         400:
           description: Bad Request
+        409:
+          description: Channel with the same name in the workspace already exists
+        500:
+          description: Internal server error
 
 
   /workspaceslist:
@@ -398,6 +402,26 @@ paths:
           description: Workspace not found
         500:
           description: Internal server error
+
+  /workspaceadmins/{ws}:
+    get:
+      description: Gets array of admins of current workspace
+      parameters:
+        - name: ws
+          in: path
+          description: current workspace
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Succesfully got admins of workspace
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminsList'
+        400:
+          description: Bad Request
 
 
 components:
@@ -544,6 +568,11 @@ components:
 
     ids:
       type: string
+
+    AdminsList:
+      type: array
+      items:
+        $ref: '#/components/schemas/ids'
 
     UserReq:
       type: object

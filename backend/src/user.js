@@ -130,12 +130,30 @@ exports.addChannel = async (req, res) => {
   const channelName = info.channelName;
   const workspacename = info.workspacename;
 
-  if (channelName && workspacename) {
-    await db.addChannel(workspacename, channelName);
-
-    res.status(201).send();
-  } else {
+  if (!channelName || !workspacename) {
     res.status(400).send();
+  }
+
+  const result = await db.addChannel(workspacename, channelName);
+
+  if (result === 'created') {
+    res.status(201).send();
+  } else if (result === 'conflict') {
+    res.status(409).send();
+  } else {
+    res.status(500).send();
+  }
+};
+
+exports.getWorkspaceAdmins = async (req, res) => {
+  const workspacename = req.params.ws;
+
+  const admins = await db.getWorkspaceAdmins(workspacename);
+
+  if (admins === null) {
+    res.status(400).send();
+  } else {
+    res.status(200).send(admins);
   }
 };
 

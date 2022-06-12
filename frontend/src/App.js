@@ -46,6 +46,7 @@ function App() {
   const [userObj, setUserObj] = React.useState(null);
   const [currentWorkspace, setWorkspace] = React.useState('none');
   const [currentChannels, setChannels] = React.useState([]);
+  const [currentAdmins, setAdmins] = React.useState([]);
   const [currentChannel, setChannel] =
     React.useState('# General');
   const [currentChatlog, setChatlog] =
@@ -56,6 +57,7 @@ function App() {
   const [clickedUserId, setClickedUserId] = React.useState('');
   const [settingsOpen, setSettingsOpen] = React.useState(false);
   const [userStatus, setUserStatus] = React.useState('Active');
+  const [addedChannel, setAddedChannel] = React.useState(false);
   const [userName] = React.useState('PLACEHOLDER_USER');
 
   useEffect(() => {
@@ -76,12 +78,12 @@ function App() {
           newLogin, setNewLogin, currentChatlog,
           userObj, setUserObj, mobileOpen,
           setMobileOpen, currentChannels, currentDmdWith,
-          setChannel, setDmdWith,
+          setChannel, setDmdWith, currentAdmins, setAdmins,
           clickedUserId, setClickedUserId, setChannels,
           currentWorkspace, setWorkspace, settingsOpen,
           setSettingsOpen, userStatus, setUserStatus, userName,
           currentChannel, clickedDms, setClickedDms,
-          setChatlog,
+          setChatlog, addedChannel, setAddedChannel,
         }}>
           <Route exact path="/home">
             <ResponsiveDrawer/>

@@ -276,9 +276,11 @@ export default function ResponsiveDrawer(props) {
   const {updateChatlog} = React.useContext(globalContext);
   const {currentWorkspace} = React.useContext(globalContext);
   const {setChannels} = React.useContext(globalContext);
+  const {setAdmins} = React.useContext(globalContext);
   const {setDmdWith} = React.useContext(globalContext);
   const {clickedDms} = React.useContext(globalContext);
   const {clickedUserId} = React.useContext(globalContext);
+  const {addedChannel} = React.useContext(globalContext);
   const {userStatus, setUserStatus} = React.useContext(globalContext);
   const {userName} = React.useContext(globalContext);
   const {currentChatlog, setChatlog} = React.useContext(globalContext);
@@ -347,6 +349,10 @@ export default function ResponsiveDrawer(props) {
     }
   };
 
+  useEffect(() => {
+    getChannels();
+  }, [addedChannel]);
+
   const getDmdWith = () => {
     try {
       const param1 = userObj.id;
@@ -363,6 +369,9 @@ export default function ResponsiveDrawer(props) {
         })
         .then((json) => {
           setDmdWith(json);
+        })
+        .catch((e) => {
+          console.log(e);
         });
     } catch (e) {
       console.log(e);
@@ -420,6 +429,9 @@ export default function ResponsiveDrawer(props) {
           })
           .then((json) => {
             setChatlog(json);
+          })
+          .catch((e) => {
+            console.log(e);
           });
       }
     } catch (e) {
@@ -430,6 +442,32 @@ export default function ResponsiveDrawer(props) {
   useEffect(() => {
     getChatlog();
   }, [currentChannel, currentWorkspace, updateChatlog]);
+
+  const getWorkspaceAdmins = () => {
+      let param = currentWorkspace;
+      param = param.replace(/\s{1}/g, '%20');
+      param = param.replace(/#/g, '%23');
+      param = param.replace(/!/g, '%21');
+
+      fetch(`http://localhost:3010/v0/workspaceadmins/${param}`)
+        .then((results) => {
+          if (!results.ok) {
+            throw results;
+          }
+          return results.json();
+        })
+        .then((json) => {
+          console.log(json);
+          setAdmins(json);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+  };
+
+  useEffect(() => {
+    getWorkspaceAdmins();
+  }, [currentWorkspace]);
 
   // --------------------------------------------------------------------------
 

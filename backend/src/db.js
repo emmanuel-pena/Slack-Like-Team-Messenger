@@ -344,14 +344,61 @@ exports.getChannels = async (ws) => {
 
 exports.addChannel = async (ws, cn) => {
 
-  const select = 'INSERT INTO Channels(workspacename, channelname) VALUES ($1, $2)';
+  const chatlog = [];
+
+  const select = 'INSERT INTO Channels(workspacename, channelname, chatlog) VALUES ($1, $2, $3)';
+
+  const query = {
+    text: select,
+    values: [ws, cn, JSON.stringify(chatlog)],
+  };
+
+  const channelExists = searchIfChannelsExists(ws, cn);
+
+  if (channelExists === true) {
+    return 'conflict';
+  } else {
+    await pool.query(query);
+
+    return 'created';
+  }
+
+};
+
+searchIfChannelsExists = async (ws, cn) => {
+
+  const select = 'SELECT * FROM Channels WHERE workspacename = $1 AND channelname = $2';
 
   const query = {
     text: select,
     values: [ws, cn],
   };
 
-  await pool.query(query);
+  const {rows} = await pool.query(query);
+
+  if (rows.length > 0) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+exports.getWorkspaceAdmins = async (ws) => {
+
+  const select = 'SELECT admins FROM Workspaces where workspacename = $1';
+
+  const query = {
+    text: select,
+    values: [ws],
+  };
+
+  const {rows} = await pool.query(query);
+
+  if (rows.length > 0) {
+    return rows[0].admins;
+  } else {
+    return null;
+  }
 
 };
 

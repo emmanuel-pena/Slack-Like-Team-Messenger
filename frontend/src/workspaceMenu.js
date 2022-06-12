@@ -313,7 +313,7 @@ export default function MenuListWS() {
         </Dialog>
       </div>
 
-      <div>
+      <div style={{backgroundColor: '#F6CDFF'}}>
         <Dialog open={openExistingName} onClose={handleCloseExistingName}>
           <DialogTitle style={{color: '#3F0E40'}}>Enter name of workspace to join</DialogTitle>
           <DialogContent>
@@ -334,7 +334,7 @@ export default function MenuListWS() {
         </Dialog>
       </div>
 
-      <div>
+      <div style={{backgroundColor: '#F6CDFF'}}>
         <Dialog open={openNewName} onClose={handleCloseNewName}>
           <DialogTitle style={{color: '#3F0E40'}}>Enter name of workspace to create</DialogTitle>
           <DialogContent>
