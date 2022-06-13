@@ -653,7 +653,7 @@ components:
           type: string
       required:
         - id
-        - ifWith
+        - idWith
         - ws
         - content
 

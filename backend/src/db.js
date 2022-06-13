@@ -245,7 +245,7 @@ exports.pushToDmsWithUser = async (id, idWith, ws, content) => {
 
   const newObj = {};
   newObj['senderID'] = parseInt(id);
-  newObj['from'] = await getFullName(id.toString);
+  newObj['from'] = await getFullName(id.toString());
   newObj['date'] = new Date().toISOString();
   newObj['content'] = content;
 

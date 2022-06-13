@@ -135,11 +135,11 @@ export default function Chatbox() {
       } else if (Object.values({clickedDms})[0] === 'true') {
         console.log('pushing to dms!!!');
 
-        const param1 = parseInt(userObj.id);
+        const param1 = Number(userObj.id);
 
-        const param2 = parseInt(Object.values({clickedUserId})[0]);
+        const param2 = Number(Object.values({clickedUserId})[0]);
 
-        const param3 = Object.values({currentWorkspace})[0];
+        const param3 = currentWorkspace;
 
         const param4 = currentInput;
 
@@ -154,6 +154,7 @@ export default function Chatbox() {
           },
         })
           .then((res) => {
+            console.log(res.status);
             if (!res.ok) {
               throw res;
             }

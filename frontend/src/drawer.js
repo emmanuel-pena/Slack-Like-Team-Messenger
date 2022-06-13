@@ -444,6 +444,7 @@ export default function ResponsiveDrawer(props) {
   }, [currentChannel, currentWorkspace, updateChatlog]);
 
   const getWorkspaceAdmins = () => {
+    if (currentWorkspace && currentWorkspace !== 'No Workspace Joined') {
       let param = currentWorkspace;
       param = param.replace(/\s{1}/g, '%20');
       param = param.replace(/#/g, '%23');
@@ -463,6 +464,7 @@ export default function ResponsiveDrawer(props) {
         .catch((e) => {
           console.log(e);
         });
+    }
   };
 
   useEffect(() => {

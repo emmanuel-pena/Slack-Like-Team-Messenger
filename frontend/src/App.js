@@ -44,7 +44,7 @@ function App() {
   const [newLogin, setNewLogin] = React.useState(false);
   const [show, setShow] = React.useState(true);
   const [userObj, setUserObj] = React.useState(null);
-  const [currentWorkspace, setWorkspace] = React.useState('none');
+  const [currentWorkspace, setWorkspace] = React.useState('No Workspace Joined');
   const [currentChannels, setChannels] = React.useState([]);
   const [currentAdmins, setAdmins] = React.useState([]);
   const [currentChannel, setChannel] =

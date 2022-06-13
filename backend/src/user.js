@@ -74,7 +74,7 @@ exports.getDmsWithUser = async (req, res) => {
 
 
 exports.pushToDmsWithUser = async (req, res) => {
-  console.log('here0');
+  console.log('In push to dms with user');
   const id = req.body.id;
   const idWith = req.body.idWith;
   const ws = req.body.ws;
