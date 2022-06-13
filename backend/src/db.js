@@ -353,11 +353,11 @@ exports.addChannel = async (ws, cn) => {
     values: [ws, cn, JSON.stringify(chatlog)],
   };
 
-  const channelExists = searchIfChannelsExists(ws, cn);
+  const conflict = await searchIfChannelsExists(ws, cn);
 
-  if (channelExists === true) {
+  if (conflict === true) {
     return 'conflict';
-  } else {
+  } else if (conflict === false) {
     await pool.query(query);
 
     return 'created';
@@ -368,7 +368,7 @@ exports.addChannel = async (ws, cn) => {
 searchIfChannelsExists = async (ws, cn) => {
 
   const select = 'SELECT * FROM Channels WHERE workspacename = $1 AND channelname = $2';
-
+  
   const query = {
     text: select,
     values: [ws, cn],
