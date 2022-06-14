@@ -136,26 +136,13 @@ export default function Login() {
           console.log(json);
           localStorage.setItem('user', JSON.stringify(json));
           setNewLogin(!newLogin);
-          setUserObj(JSON.parse(localStorage.getItem('user')));
           console.log(JSON.parse(localStorage.getItem('user')).workspaces[0]);
-          setWorkspace(JSON.parse(localStorage.getItem('user')).workspaces[0]);
           setShow(false);
 
           console.log('getDetails 2)');
           const obj = json;
           console.log(obj);
 
-          console.log('getDetails 3)');
-          const u = user;
-          u.id = obj.id;
-          u.name = obj.name;
-          u.email = obj.email;
-          u.username = obj.username;
-          u.accessToken = obj.accessToken;
-          u.role = obj.role;
-          u.workspaces = obj.workspaces;
-          setUser(u);
-          console.log(user);
           history.push('/home');
         })
         .catch((err) => {

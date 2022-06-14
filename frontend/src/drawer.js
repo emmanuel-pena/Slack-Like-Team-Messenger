@@ -239,8 +239,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 // source: https://material-ui.com/components/drawers/
 
-const userObj = JSON.parse(localStorage.getItem('user'));
-console.log(userObj);
 const today = new Date();
 
 const months = {
@@ -272,9 +270,8 @@ export default function ResponsiveDrawer(props) {
   const [selectedListItem, setSelectedItem] = React.useState(false);
 
   // GLOBAL CONTEXT
-  const {userObj} = React.useContext(globalContext);
   const {updateChatlog} = React.useContext(globalContext);
-  const {currentWorkspace} = React.useContext(globalContext);
+  const {currentWorkspace, setWorkspace} = React.useContext(globalContext);
   const {setChannels} = React.useContext(globalContext);
   const {setAdmins} = React.useContext(globalContext);
   const {setDmdWith} = React.useContext(globalContext);
@@ -329,9 +326,14 @@ export default function ResponsiveDrawer(props) {
     }
   }
 
+  useEffect(() => {
+    setWorkspace(JSON.parse(localStorage.getItem('user')).workspaces[0]);
+  }, []);
+
   const getChannels = () => {
     try {
-      let param = Object.values({currentWorkspace})[0];
+      let param = currentWorkspace;
+      console.log(param);
       param = param.replace(/\s{1}/g, '%20');
       // I'm adding query params here
       fetch(`http://localhost:3010/v0/channelslist?ws=${param}`)
@@ -343,6 +345,9 @@ export default function ResponsiveDrawer(props) {
         })
         .then((json) => {
           setChannels(json);
+        })
+        .catch((e) => {
+          console.log(e);
         });
     } catch (e) {
       console.log(e);
@@ -355,8 +360,9 @@ export default function ResponsiveDrawer(props) {
 
   const getDmdWith = () => {
     try {
-      const param1 = userObj.id;
-      let param2 = Object.values({currentWorkspace})[0];
+      const param1 = (JSON.parse(localStorage.getItem('user'))).id;
+      let param2 = currentWorkspace;
+      console.log(param2);
       param2 = param2.replace(/\s{1}/g, '%20');
 
       // I'm adding query params here http://localhost:3010/v0/dmdusers?id=1&ws=CSE%20183%20Summer%202021
@@ -412,7 +418,7 @@ export default function ResponsiveDrawer(props) {
           });
       } else if (clickedDms === 'true') {
         console.log('fetching dms!!!');
-        const param1 = userObj.id;
+        const param1 = (JSON.parse(localStorage.getItem('user'))).id;
         const param2 = Object.values({clickedUserId})[0];
 
         let param3 = Object.values({currentWorkspace})[0];
