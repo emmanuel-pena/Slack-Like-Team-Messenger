@@ -202,6 +202,29 @@ exports.joinWorkspace = async (req, res) => {
 
 };
 
+exports.getSearchedUsers = async (req, res) => {
+  let entered = req.query.query;
+  entered = entered.toLowerCase();
+
+  let query = entered[0].toUpperCase() + entered.substring(1);
+  const arr = query.split(' ');
+
+  if (arr.length == 2 && arr[1][0] !== ' ' && arr[1] !== '' && arr[1]) {
+    console.log(arr);
+    query = arr[0] + ' ' + arr[1][0].toUpperCase() + arr[1].substring(1);
+  }
+
+  console.log(query);
+
+  const workspacename = req.query.ws;
+
+  const users = await db.getSearchedUsers(query, workspacename);
+  if (users === null) {
+    res.status(404).send();
+  } else {
+    res.status(200).send(users);
+  }
+};
 
 exports.getActiveDms = async (req, res) => {
   const id = req.query.ident;

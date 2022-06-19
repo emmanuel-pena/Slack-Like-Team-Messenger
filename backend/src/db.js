@@ -100,7 +100,7 @@ exports.getUA = async (email) => {
     text: select,
     values: [email],
   };
-  const { rows } = await pool.query(query);
+  const {rows} = await pool.query(query);
   console.log(rows);
   const ua = {id: '', name: '', password: '', email: '', workspaces: []};
 
@@ -147,22 +147,11 @@ exports.getDmsWithUser = async (id, idWith, ws) => {
     values: [id, idWith, ws],
   };
 
-  console.log('console.logging query.values:');
   console.log(query.values);
 
-  const { rows } = await pool.query(query);
-  console.log('console.logging rows:');
-  console.log(rows);
+  const {rows} = await pool.query(query);
 
-  console.log('db.js) ran query. Going to count rows now.. count will apear if > 0');
   if (rows.length > 0) {
-    console.log('counted rows. going to return chatlog now');
-    console.log('about to print row count..');
-    console.log(rows.length);
-    console.log('about to print row 0');
-    console.log(rows[0]);
-    console.log('about to print row 0.chatlog');
-    console.log(rows[0].chatlog);
     return rows[0].chatlog;
   }
   else {
@@ -503,6 +492,39 @@ searchIfWorkspaceExists = async (ws) => {
   } else {
     return false;
   }
+};
+
+exports.getSearchedUsers = async (q, ws) => {
+
+  const select = 'SELECT id, fullname FROM Users WHERE (workspaces)::jsonb ? $1 AND fullname LIKE $2';
+
+  let searched = q + '%'; // pattern match
+
+  const query = {
+    text: select,
+    values: [ws, searched],
+  };
+
+  const {rows} = await pool.query(query);
+
+  if (rows.length > 0) {
+
+    const arr = [];
+    let obj = {id: '', name: ''};
+
+    for (let i = 0; i < rows.length; ++i) {
+      obj.id = rows[i].id;
+      obj.name = rows[i].fullname;
+
+      const copy = {id: obj.id, name: obj.name};
+      arr.push(copy);
+    }
+
+    return arr;
+  } else {
+    return null;
+  }
+
 };
 
 exports.getActiveDms = async (id, ws) => {

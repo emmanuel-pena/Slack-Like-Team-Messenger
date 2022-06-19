@@ -54,6 +54,8 @@ app.put('/v0/userworkspaces', user.joinWorkspace);
 
 app.get('/v0/workspaceadmins/:ws', user.getWorkspaceAdmins);
 
+app.get('/v0/searchedusers', user.getSearchedUsers);
+
 
 app.get('/v0/data', user.getActiveDms);            //unf
 app.get('/v0/data', user.getAllDms);               //unf

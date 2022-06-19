@@ -423,6 +423,40 @@ paths:
         400:
           description: Bad Request
 
+  /searchedusers:
+    get:
+      description: Gets users from current ADD TEAMMATE query of dms
+      parameters:
+        - name: ws
+          in: query
+          description: workspace currently in
+          schema:
+            type: string
+        - name: query
+          in: query
+          description: entered query
+          schema:
+            type: string
+      responses:
+        200:
+          description: Succesful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReturnedUsers'
+        404:
+          description: User Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
 
 components:
   schemas:
@@ -538,6 +572,11 @@ components:
           type: integer
 
     UsersInfo:
+      type: array
+      items:
+        $ref: '#/components/schemas/UserObj'
+
+    ReturnedUsers:
       type: array
       items:
         $ref: '#/components/schemas/UserObj'
