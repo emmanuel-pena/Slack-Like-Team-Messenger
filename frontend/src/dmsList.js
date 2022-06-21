@@ -1,5 +1,6 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
+import debounce from 'lodash.debounce';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -9,6 +10,14 @@ import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import PersonIcon from '@material-ui/icons/Person';
 import AddBoxOutlinedIcon from '@material-ui/icons/AddBoxOutlined';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import TextField from '@mui/material/TextField';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import InputAdornment from '@mui/material/InputAdornment';
+import {Divider} from '@mui/material';
 
 // Global context
 import globalContext from './globalContext';
@@ -30,6 +39,14 @@ const useStyles = makeStyles((theme) => ({
   nestedAddText: {
     marginLeft: theme.spacing(0.5),
   },
+  suggestions: {
+    listStyle: 'none',
+    margin: 0,
+    padding: 0,
+  },
+  active: {
+    backgroundColor: 'lightgray',
+  },
 }));
 
 /**
@@ -38,6 +55,11 @@ const useStyles = makeStyles((theme) => ({
 export default function DmsList() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
+  const [openMessageNew, setOpenMessageNew] = React.useState(false);
+  const [suggestions, setSuggestions] = React.useState([]);
+  const [suggestionIndex, setSuggestionIndex] = useState(0);
+  const [suggestionsActive, setSuggestionsActive] = useState(false);
+  const [value, setValue] = useState('');
   console.log('I am inside DmsList!!');
   // Global Context
   const {setMobileOpen} = React.useContext(globalContext);
@@ -45,6 +67,7 @@ export default function DmsList() {
   const {setChannel} = React.useContext(globalContext);
   const {clickedDms, setClickedDms} = React.useContext(globalContext);
   const {setClickedUserId} = React.useContext(globalContext);
+  const {currentWorkspace} = React.useContext(globalContext);
 
   const handleClickUser = (event) => {
     setMobileOpen(false);
@@ -56,13 +79,101 @@ export default function DmsList() {
 
   const handleClickAdd = () => {
     setMobileOpen(false);
+    setOpenMessageNew(true);
   };
 
   const handleClick = () => {
     setOpen(!open);
   };
 
+  const handleSelect = (e) => {
+    console.log(e.target.innerHTML);
+    setSuggestions([]);
+    setValue(e.target.innerText);
+    setSuggestionsActive(false);
+  };
+
+  const handleCloseMessageNew = () => {
+    setOpenMessageNew(false);
+  };
+
+  const handleSuggest = (currInput) => {
+    if (currInput.length > 0) {
+      const param1 = currentWorkspace;
+      const param2 = currInput;
+      console.log('here');
+      fetch(`http://localhost:3010/v0/searchedusers?ws=${param1}&query=${param2}`)
+        .then((res) => {
+          if (!res.ok) {
+            throw res;
+          }
+          return res.json();
+        })
+        .then((json) => {
+          setSuggestions(json);
+          console.log(suggestions);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    } else {
+      setSuggestionsActive(false);
+      setSuggestions([]);
+    }
+  };
+
+  const handleInputChange = (event) => {
+    const currInput = event.target.value;
+
+    setValue(currInput);
+    setSuggestionsActive(true);
+    const debouncedSuggestions = debounce(() => handleSuggest(currInput), 400);
+    debouncedSuggestions();
+  };
+
+  const handleKeyDown = (e) => {
+    // UP ARROW
+    if (e.keyCode === 38) {
+      if (suggestionIndex === 0) {
+        return;
+      }
+      setSuggestionIndex(suggestionIndex - 1);
+    } else if (e.keyCode === 40) {
+      if (suggestionIndex - 1 === suggestions.length) {
+        return;
+      }
+      setSuggestionIndex(suggestionIndex + 1);
+    } else if (e.keyCode === 13) {
+      setValue(suggestions[suggestionIndex]);
+      setSuggestionIndex(0);
+      setSuggestionsActive(false);
+    }
+  };
+
+  const Suggestions = () => {
+    return (
+      <ul className={classes.suggestions}>
+        {suggestions.map((suggestion, index) => {
+          return (
+            <>
+            <li
+              style={{cursor: 'pointer'}}
+              className={index === suggestionIndex ? classes.active : ''}
+              key={index}
+              onClick={handleSelect}
+            >
+              {suggestion.name}#{suggestion.id}
+            </li>
+              <Divider />
+            </>
+          );
+        })}
+        </ul>
+    );
+  };
+
   return (
+    <>
     <List
       component="nav"
       aria-labelledby="nested-list-subheader"
@@ -90,11 +201,38 @@ export default function DmsList() {
             </ListItemIcon>
             <AddBoxOutlinedIcon className={classes.nestedAdd}/>
             <ListItemText
-              className={classes.nestedAddText} primary="Add Teammate" />
+              className={classes.nestedAddText} primary="New Person" />
           </ListItem>
         </List>
       </Collapse>
-    </List>
+      </List>
+
+      <div style={{backgroundColor: '#F6CDFF'}}>
+        <Dialog open={openMessageNew} onClose={handleCloseMessageNew}>
+          <DialogTitle style={{color: '#3F0E40'}}>Enter name of person to message</DialogTitle>
+          <DialogContent>
+            <TextField
+              margin="dense"
+              id="name"
+              label="New message"
+              fullWidth
+              variant="filled"
+              value={value}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              InputProps={{
+                startAdornment: <InputAdornment position="start">to: </InputAdornment>,
+              }}
+            />
+            {suggestionsActive? <Suggestions /> : <></>}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseMessageNew} variant='contained' style={{backgroundColor: '#3F0E40'}}>Cancel</Button>
+            <Button variant='contained' style={{backgroundColor: '#3F0E40'}}>Create Message Thread</Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+      </>
   );
 }
 
