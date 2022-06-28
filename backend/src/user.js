@@ -98,7 +98,7 @@ exports.getDmdUsers = async (req, res) => {
 
   const array = await db.getDmdUsers(id, ws);
   if (array === null) {
-    res.status(404).send();
+    res.status(500).send();
   } else {
     res.status(200).send(array);
   }
