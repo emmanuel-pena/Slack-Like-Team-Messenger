@@ -219,6 +219,56 @@ updateChannelChat = async (replacement, ws, cn, ) => {
   await pool.query(query);
 };
 
+exports.createDmsWithUser = async (id, idWith, ws) => {
+  const emptyChatlog = [];
+
+  const select = 'INSERT INTO Dms(userID, withID, workspacename, chatlog) VALUES ($1, $2, $3, $4)';
+  const query = {
+    text: select,
+    values: [id.toString(), idWith.toString(), ws, JSON.stringify(emptyChatlog)],
+  };
+
+  const conflict = await searchIfDmsExist(id, idWith, ws);
+
+  if (conflict === true) {
+    return 'conflict';
+  } else if (conflict === false) {
+    await pool.query(query);
+
+    await createDmsForOtherUser(id, idWith, ws);
+
+    return 'created';
+  }
+};
+
+searchIfDmsExist = async (id, idWith, ws) => {
+
+  const select = 'SELECT * FROM Dms WHERE userID = $1 AND withID = $2 AND workspacename = $3';
+  const query = {
+    text: select,
+    values: [id, idWith, ws],
+  };
+
+  const {rows} = await pool.query(query);
+
+  if (rows.length > 0) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+createDmsForOtherUser = async (id, idWith, ws, emptyChatlog) => {
+
+  const select = 'INSERT INTO Dms(userID, withID, workspacename, chatlog) VALUES ($1, $2, $3, $4)';
+  const query = {
+    text: select,
+    values: [idWith.toString(), id.toString(), ws, JSON.stringify(emptyChatlog)],
+  };
+
+  await pool.query(query);
+};
+
 exports.pushToDmsWithUser = async (id, idWith, ws, content) => {
 
   const select = 'SELECT chatlog FROM Dms WHERE userID LIKE $1 AND withID LIKE $2 AND workspacename = $3';
@@ -227,7 +277,7 @@ exports.pushToDmsWithUser = async (id, idWith, ws, content) => {
     values: [id.toString(), idWith.toString(), ws],
   };
 
-  const { rows } = await pool.query(query);
+  const {rows} = await pool.query(query);
 
 
   const copy = rows[0].chatlog;
@@ -494,7 +544,7 @@ searchIfWorkspaceExists = async (ws) => {
   }
 };
 
-exports.getSearchedUsers = async (q, ws) => {
+exports.getSearchedUsers = async (q, ws, id) => {
 
   const select = 'SELECT id, fullname FROM Users WHERE (workspaces)::jsonb ? $1 AND fullname LIKE $2';
 
@@ -517,7 +567,9 @@ exports.getSearchedUsers = async (q, ws) => {
       obj.name = rows[i].fullname;
 
       const copy = {id: obj.id, name: obj.name};
-      arr.push(copy);
+      if (rows[i].id !== id) {
+        arr.push(copy);
+      }
     }
 
     return arr;

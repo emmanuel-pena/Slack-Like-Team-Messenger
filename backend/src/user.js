@@ -100,6 +100,25 @@ exports.getDmdUsers = async (req, res) => {
   }
 };
 
+exports.createDmsWithUser = async (req, res) => {
+  console.log('In push to dms with user');
+  const id = req.body.id;
+  const idWith = req.body.idWith;
+  const ws = req.body.ws;
+
+  if (id && ws && idWith) {
+    const status = await db.createDmsWithUser(id, idWith, ws);
+
+    if (status === 'conflict') {
+      res.status(409).send();
+    } else if (status === 'created') {
+      res.status(201).send();
+    }
+  } else {
+    res.status(400).send();
+  }
+};
+
 exports.getWorkspaces = async (req, res) => {
   const id = req.query.ident;
   const workspaces = await db.getWorkspaces(id);
@@ -218,7 +237,9 @@ exports.getSearchedUsers = async (req, res) => {
 
   const workspacename = req.query.ws;
 
-  const users = await db.getSearchedUsers(query, workspacename);
+  const id = req.query.id;
+
+  const users = await db.getSearchedUsers(query, workspacename, id);
   if (users === null) {
     res.status(404).send();
   } else {
@@ -265,4 +286,3 @@ exports.getAllDms = async (req, res) => {
     res.status(200).send(dmChat);
   }
 };
-

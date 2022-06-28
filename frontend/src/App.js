@@ -41,6 +41,7 @@ function App() {
 //  setInfo(temp);
   const [updateChatlog, setUpdateChatlog] = React.useState(false);
   const [updateWorkspaces, setUpdateWorkspaces] = React.useState(false);
+  const [updatedDmsList, setUpdatedDmsList] = React.useState(false);
   const [newLogin, setNewLogin] = React.useState(false);
   const [show, setShow] = React.useState(true);
   const [currentWorkspace, setWorkspace] = React.useState('No Workspace Joined');
@@ -75,7 +76,7 @@ function App() {
         <GlobalProvider value={{
           show, setShow, updateChatlog, setUpdateChatlog,
           newLogin, setNewLogin, currentChatlog,
-          mobileOpen,
+          mobileOpen, updatedDmsList, setUpdatedDmsList,
           setMobileOpen, currentChannels, currentDmdWith,
           setChannel, setDmdWith, currentAdmins, setAdmins,
           clickedUserId, setClickedUserId, setChannels,

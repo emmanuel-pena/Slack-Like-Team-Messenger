@@ -40,9 +40,10 @@ app.get('/v0/channelschat', user.getChannelChat);
 app.post('/v0/channelschat', user.pushToChannel);
 
 app.get('/v0/dmschat', user.getDmsWithUser);
-app.post('/v0/dmschat', user.pushToDmsWithUser);
+app.put('/v0/dmschat', user.pushToDmsWithUser);
 
 app.get('/v0/dmdusers', user.getDmdUsers);
+app.post('/v0/dmdusers', user.createDmsWithUser);
 
 app.get('/v0/channelslist', user.getChannels);
 app.post('/v0/channelslist', user.addChannel);

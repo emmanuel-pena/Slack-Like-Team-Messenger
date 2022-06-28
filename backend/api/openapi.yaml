@@ -222,8 +222,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-    post:
-      description: Posts to dms from specified info
+    put:
+      description: Updates dms from specified info
       requestBody:
         description: info of stuff for adding
         required: true
@@ -278,6 +278,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      description: Creates new dms thread from specified info
+      requestBody:
+        description: user id with id and workspace
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserReqCreateDms'
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        409:
+          description: Conflict because already have dms with user
         default:
           description: unexpected error
           content:
@@ -435,6 +462,11 @@ paths:
         - name: query
           in: query
           description: entered query
+          schema:
+            type: string
+        - name: id
+          in: query
+          description: id of current user
           schema:
             type: string
       responses:
@@ -695,6 +727,20 @@ components:
         - idWith
         - ws
         - content
+
+    UserReqCreateDms:
+      type: object
+      properties:
+        id:
+          type: string
+        idWith:
+          type: string
+        ws:
+          type: string
+      required:
+        - id
+        - idWith
+        - ws
 
     User:
       required:

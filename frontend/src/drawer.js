@@ -278,6 +278,7 @@ export default function ResponsiveDrawer(props) {
   const {clickedDms} = React.useContext(globalContext);
   const {clickedUserId} = React.useContext(globalContext);
   const {addedChannel} = React.useContext(globalContext);
+  const {updatedDmsList} = React.useContext(globalContext);
   const {userStatus, setUserStatus} = React.useContext(globalContext);
   const {userName} = React.useContext(globalContext);
   const {currentChatlog, setChatlog} = React.useContext(globalContext);
@@ -389,6 +390,9 @@ export default function ResponsiveDrawer(props) {
     getDmdWith();
   }, [currentWorkspace]);
 
+  useEffect(() => {
+    getDmdWith();
+  }, [updatedDmsList]);
 
   // setting the chatlogs stuff:  ------------------------------------------
 

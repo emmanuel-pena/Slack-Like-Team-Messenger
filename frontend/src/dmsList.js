@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
     padding: 0,
   },
   active: {
-    backgroundColor: 'lightgray',
+    backgroundColor: '#F9FC7D',
   },
 }));
 
@@ -68,6 +68,7 @@ export default function DmsList() {
   const {clickedDms, setClickedDms} = React.useContext(globalContext);
   const {setClickedUserId} = React.useContext(globalContext);
   const {currentWorkspace} = React.useContext(globalContext);
+  const {updatedDmsList, setUpdatedDmsList} = React.useContext(globalContext);
 
   const handleClickUser = (event) => {
     setMobileOpen(false);
@@ -86,10 +87,45 @@ export default function DmsList() {
     setOpen(!open);
   };
 
-  const handleSelect = (e) => {
-    console.log(e.target.innerHTML);
+  const handleSelect = (suggestion) => {
+    const obj = suggestion.suggestion;
+
+    const name = obj.name;
+    const idOfSelected = obj.id;
+
     setSuggestions([]);
-    setValue(e.target.innerText);
+    setValue(name);
+
+    const args = {id: JSON.parse(localStorage.getItem('user')).id, idWith: idOfSelected, ws: currentWorkspace};
+
+    console.log(args);
+
+    fetch('http://localhost:3010/v0/dmdusers', {
+      method: 'POST',
+      body: JSON.stringify(args),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => {
+        if (res.status === 409) {
+          alert('Dms already exist!');
+          throw res;
+        }
+        if (res.status !== 201) {
+          throw res;
+        }
+        console.log('fetched post dmdusers');
+        setUpdatedDmsList(!updatedDmsList);
+        setValue('');
+        handleCloseMessageNew();
+        return;
+      })
+      .catch((err) => {
+        console.log(err);
+        alert('Error creating new Dms');
+      });
+
     setSuggestionsActive(false);
   };
 
@@ -101,8 +137,9 @@ export default function DmsList() {
     if (currInput.length > 0) {
       const param1 = currentWorkspace;
       const param2 = currInput;
+      const param3 = JSON.parse(localStorage.getItem('user')).id;
       console.log('here');
-      fetch(`http://localhost:3010/v0/searchedusers?ws=${param1}&query=${param2}`)
+      fetch(`http://localhost:3010/v0/searchedusers?ws=${param1}&query=${param2}&id=${param3}`)
         .then((res) => {
           if (!res.ok) {
             throw res;
@@ -157,12 +194,14 @@ export default function DmsList() {
           return (
             <>
             <li
-              style={{cursor: 'pointer'}}
-              className={index === suggestionIndex ? classes.active : ''}
-              key={index}
-              onClick={handleSelect}
+                style={{cursor: 'pointer'}}
+                className={index === suggestionIndex ? classes.active : ''}
+                key={index}
+                onClick={() => {
+                  handleSelect({suggestion});
+                }}
             >
-              {suggestion.name}#{suggestion.id}
+                <span>{suggestion.name}</span> <span style={{color: '#939393'}}>#{suggestion.id}</span>
             </li>
               <Divider />
             </>
@@ -228,7 +267,6 @@ export default function DmsList() {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseMessageNew} variant='contained' style={{backgroundColor: '#3F0E40'}}>Cancel</Button>
-            <Button variant='contained' style={{backgroundColor: '#3F0E40'}}>Create Message Thread</Button>
           </DialogActions>
         </Dialog>
       </div>
