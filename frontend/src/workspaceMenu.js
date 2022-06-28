@@ -70,8 +70,6 @@ export default function MenuListWS() {
   const [openExistingName, setOpenExistingName] = React.useState(false);
   const [input, setInput] = React.useState('');
 
-  console.log('I am inside workspace Menu!');
-
   const workspaces = userObj.workspaces;
   // Global Context
   const {setWorkspace} = React.useContext(globalContext);

@@ -30,7 +30,6 @@ export default function Chatbox() {
   const {clickedDms} = React.useContext(globalContext);
   const {clickedUserId} = React.useContext(globalContext);
   const {setChatlog} = React.useContext(globalContext);
-  const {updateChatlog, setUpdateChatlog} = React.useContext(globalContext);
 
   const [placeholder, setPlaceholder] =
     React.useState('Message ' + Object.values({currentChannel})[0]);
@@ -147,7 +146,7 @@ export default function Chatbox() {
         console.log(args);
 
         fetch('http://localhost:3010/v0/dmschat', {
-          method: 'POST',
+          method: 'PUT',
           body: JSON.stringify(args),
           headers: {
             'Content-Type': 'application/json',

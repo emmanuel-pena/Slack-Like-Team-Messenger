@@ -8,7 +8,7 @@ app.listen(3010, () => {
 
 const WebSocket = require("ws");
 
-const wss = new WebSocket.Server({port: 8082});
+const wss = new WebSocket.Server({ port: 8082 });
 
 wss.on("connection", ws => {
   console.log('new client connected!');
@@ -19,7 +19,7 @@ wss.on("connection", ws => {
     // and the folowing code to broadcast to ALL connected clients: 
     wss.clients.forEach(function each(client) {
       if (client !== ws && client.readyState === WebSocket.OPEN) {
-        client.send('chatlog updated');
+        client.send(`${data}`);
       }
     });
 

@@ -147,9 +147,9 @@ exports.getDmsWithUser = async (id, idWith, ws) => {
     values: [id, idWith, ws],
   };
 
-  console.log(query.values);
-
+  console.log('db.getDmsWithUser) rows:');
   const {rows} = await pool.query(query);
+  console.log(rows);
 
   if (rows.length > 0) {
     return rows[0].chatlog;
@@ -225,7 +225,7 @@ exports.createDmsWithUser = async (id, idWith, ws) => {
   const select = 'INSERT INTO Dms(userID, withID, workspacename, chatlog) VALUES ($1, $2, $3, $4)';
   const query = {
     text: select,
-    values: [id.toString(), idWith.toString(), ws, JSON.stringify(emptyChatlog)],
+    values: [id, idWith, ws, JSON.stringify(emptyChatlog)],
   };
 
   const conflict = await searchIfDmsExist(id, idWith, ws);
@@ -235,7 +235,7 @@ exports.createDmsWithUser = async (id, idWith, ws) => {
   } else if (conflict === false) {
     await pool.query(query);
 
-    await createDmsForOtherUser(id, idWith, ws);
+    await createDmsForOtherUser(id, idWith, ws, emptyChatlog);
 
     return 'created';
   }
@@ -263,13 +263,17 @@ createDmsForOtherUser = async (id, idWith, ws, emptyChatlog) => {
   const select = 'INSERT INTO Dms(userID, withID, workspacename, chatlog) VALUES ($1, $2, $3, $4)';
   const query = {
     text: select,
-    values: [idWith.toString(), id.toString(), ws, JSON.stringify(emptyChatlog)],
+    values: [idWith, id, ws, JSON.stringify(emptyChatlog)],
   };
 
   await pool.query(query);
 };
 
 exports.pushToDmsWithUser = async (id, idWith, ws, content) => {
+  console.log(id);
+  console.log(idWith);
+  console.log(ws);
+  console.log(content);
 
   const select = 'SELECT chatlog FROM Dms WHERE userID LIKE $1 AND withID LIKE $2 AND workspacename = $3';
   const query = {
@@ -281,6 +285,8 @@ exports.pushToDmsWithUser = async (id, idWith, ws, content) => {
 
 
   const copy = rows[0].chatlog;
+
+  console.log(copy);
 
   const newObj = {};
   newObj['senderID'] = parseInt(id);
@@ -334,7 +340,7 @@ exports.getDmdUsers = async (id, ws) => {
     return usersArray;
   }
   else {
-    return null;
+    return [];
   }
 };
 

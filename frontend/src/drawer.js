@@ -271,6 +271,7 @@ export default function ResponsiveDrawer(props) {
 
   // GLOBAL CONTEXT
   const {updateChatlog} = React.useContext(globalContext);
+  const {updateDms} = React.useContext(globalContext);
   const {currentWorkspace, setWorkspace} = React.useContext(globalContext);
   const {setChannels} = React.useContext(globalContext);
   const {setAdmins} = React.useContext(globalContext);
@@ -279,18 +280,8 @@ export default function ResponsiveDrawer(props) {
   const {clickedUserId} = React.useContext(globalContext);
   const {addedChannel} = React.useContext(globalContext);
   const {updatedDmsList} = React.useContext(globalContext);
-  const {userStatus, setUserStatus} = React.useContext(globalContext);
-  const {userName} = React.useContext(globalContext);
   const {currentChatlog, setChatlog} = React.useContext(globalContext);
   const {currentChannel} = React.useContext(globalContext);
-
-  const ws = new WebSocket('ws://localhost:8082');
-
-  ws.addEventListener('open', function(event) {
-    console.log('connected from drawer');
-  });
-
-  console.log('yolo swag');
 
   function dateFormat(chatItem) {
     const date1 = chatItem.date.split('-');
@@ -392,7 +383,7 @@ export default function ResponsiveDrawer(props) {
 
   useEffect(() => {
     getDmdWith();
-  }, [updatedDmsList]);
+  }, [currentWorkspace, updateDms, updatedDmsList]);
 
   // setting the chatlogs stuff:  ------------------------------------------
 

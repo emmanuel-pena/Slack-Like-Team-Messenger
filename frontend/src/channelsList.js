@@ -56,7 +56,6 @@ export default function ChannelsList() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   const [channel, setChan] = React.useState(false);
-  console.log('I am inside channelsList!!');
 
   // Global Context
   const {setMobileOpen} = React.useContext(globalContext);

@@ -33,6 +33,7 @@ import {GlobalProvider} from './globalContext';
  * @return {object} JSX
  */
 const ws = new WebSocket('ws://localhost:8082');
+
 function App() {
 // const [dummy, setDummy] = React.useState('Click the button!');
 // const [emoji, setEmoji] = React.useState(false);
@@ -40,6 +41,7 @@ function App() {
 //  const temp = userInfo;
 //  setInfo(temp);
   const [updateChatlog, setUpdateChatlog] = React.useState(false);
+  const [updateDms, setUpdateDms] = React.useState(false);
   const [updateWorkspaces, setUpdateWorkspaces] = React.useState(false);
   const [updatedDmsList, setUpdatedDmsList] = React.useState(false);
   const [newLogin, setNewLogin] = React.useState(false);
@@ -62,7 +64,12 @@ function App() {
 
   useEffect(() => {
     ws.addEventListener('message', function(event) {
-      setUpdateChatlog(!updateChatlog);
+      console.log(event.data);
+      if (event.data === 'chatlog updated') {
+        setUpdateChatlog(!updateChatlog);
+      } else if (event.data === 'dmsList updated') {
+        setUpdateDms(!updateDms);
+      }
     });
   });
 
@@ -84,6 +91,7 @@ function App() {
           setSettingsOpen, userStatus, setUserStatus, userName,
           currentChannel, clickedDms, setClickedDms,
           setChatlog, addedChannel, setAddedChannel,
+          updateDms, setUpdateDms,
         }}>
           <Route exact path="/home">
             <ResponsiveDrawer/>

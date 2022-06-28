@@ -62,7 +62,11 @@ exports.getDmsWithUser = async (req, res) => {
   const idWith = req.query.idWith;
   const ws = req.query.ws;
 
-  console.log('user.js) about to enter db.js');
+  console.log('user.getDmsWithUser)');
+  console.log(id);
+  console.log(idWith);
+  console.log(ws);
+  console.log('user.getDmsWithUser) about to enter db.js');
   const chat = await db.getDmsWithUser(id, idWith, ws);
   if (chat === null) {
     console.log('user.js) returned null. no rows counted');
@@ -74,12 +78,12 @@ exports.getDmsWithUser = async (req, res) => {
 
 
 exports.pushToDmsWithUser = async (req, res) => {
-  console.log('In push to dms with user');
+  console.log('In user.pushToDmsWithUser)');
   const id = req.body.id;
   const idWith = req.body.idWith;
   const ws = req.body.ws;
   const content = req.body.content;
-
+  console.log('In user.pushToDmsWithUser) about to enter db.js');
   if (id && ws && idWith && content) {
     await db.pushToDmsWithUser(id, idWith, ws, content);
     res.status(200).send();
@@ -101,7 +105,7 @@ exports.getDmdUsers = async (req, res) => {
 };
 
 exports.createDmsWithUser = async (req, res) => {
-  console.log('In push to dms with user');
+  console.log('In create dms with user');
   const id = req.body.id;
   const idWith = req.body.idWith;
   const ws = req.body.ws;

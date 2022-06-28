@@ -272,8 +272,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UsersInfo'
-        404:
-          description: Uhh Not Found
+        500:
+          description: Uhh Internal Server Error. Check code
           content:
             application/json:
               schema:

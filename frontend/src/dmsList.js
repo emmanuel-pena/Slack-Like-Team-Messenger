@@ -22,6 +22,12 @@ import {Divider} from '@mui/material';
 // Global context
 import globalContext from './globalContext';
 
+const ws = new WebSocket('ws://localhost:8082');
+
+ws.addEventListener('open', () => {
+  console.log('connected from chatbox');
+});
+
 const useStyles = makeStyles((theme) => ({
   root: {
     marginTop: theme.spacing(-2.0),
@@ -60,7 +66,6 @@ export default function DmsList() {
   const [suggestionIndex, setSuggestionIndex] = useState(0);
   const [suggestionsActive, setSuggestionsActive] = useState(false);
   const [value, setValue] = useState('');
-  console.log('I am inside DmsList!!');
   // Global Context
   const {setMobileOpen} = React.useContext(globalContext);
   const {currentDmdWith} = React.useContext(globalContext);
@@ -116,6 +121,7 @@ export default function DmsList() {
           throw res;
         }
         console.log('fetched post dmdusers');
+        ws.send('dmsList updated');
         setUpdatedDmsList(!updatedDmsList);
         setValue('');
         handleCloseMessageNew();
@@ -138,7 +144,6 @@ export default function DmsList() {
       const param1 = currentWorkspace;
       const param2 = currInput;
       const param3 = JSON.parse(localStorage.getItem('user')).id;
-      console.log('here');
       fetch(`http://localhost:3010/v0/searchedusers?ws=${param1}&query=${param2}&id=${param3}`)
         .then((res) => {
           if (!res.ok) {
